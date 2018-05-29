@@ -11,5 +11,6 @@ unzip FDDC_announcements_submit_sample_20180524.zip -d submit_sample/
 pip3 install stanfordcorenlp
 
 path1:/home/utopia/corpus/stanford-corenlp-full-2018-02-27
+
 path2:stanford-chinese-corenlp-2018-02-27-models.jar in path1
 

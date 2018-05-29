@@ -1,0 +1,6 @@
+# import step record
+
+mkdir submit_sample
+unzip FDDC_announcements_round1_train_20180518.zip
+unzip FDDC_announcements_round1_test_a_20180524.zip
+unzip FDDC_announcements_submit_sample_20180524.zip -d submit_sample/

@@ -10,12 +10,14 @@ def loop(dataframe, call):
 def locate(dataframe, val):
     rows = dataframe.shape[0]
     cols = dataframe.shape[1]
+    head = None
     for row in range(rows):
         for col in range(cols):
             cell = dataframe[col][row]
             if cell == val:
-                print(dataframe[col][0])
+                head = dataframe[col][0]
                 break
+    return head
 
 
 def firstrow(dataframe):

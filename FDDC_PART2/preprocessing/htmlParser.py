@@ -15,11 +15,13 @@ def call(cell):
 
 
 def show_header(htmlpath, val):
-    with open(htmlpath, 'r') as f:
-        dfs = pd.read_html(f.read(), flavor='html5lib')
-        # dfs = pd.read_html(f.read(), match=val, flavor='html5lib')
-        for df in dfs:
-            # print(dfutil.firstcol(df))  # 第一列
-            print(dfutil.firstrow(df))  # 第一行
-            print('-------------------------------')
-            # dfutil.locate(df, val)
+    try:
+        with open(htmlpath, 'r') as f:
+            dfs = pd.read_html(f.read(), match=val, flavor='lxml')  # html5lib 有bug
+            for df in dfs:
+                # print(dfutil.firstcol(df))  # 第一列
+                # print(dfutil.firstrow(df))  # 第一行
+                head = dfutil.locate(df, val)
+                return head
+    except:
+        pass

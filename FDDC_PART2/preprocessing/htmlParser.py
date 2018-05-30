@@ -14,12 +14,9 @@ def call(cell):
     print(cell)
 
 
-with open(htmlpath + '7880.html', 'r') as f:
-    dfs = pd.read_html(f.read(), flavor='html5lib')
-    for df in dfs:
-        # print(dfutil.firstrow(df))  # 第一行
-        print('-----------------------------------')
-        print(dfutil.firstcol(df))  # 第一列
-        # dfutil.loop(df[0:1])
-        # dfutil.loop(df[[0]],call)
-        print('----------------------------------------------------------------------')
+def show_header(htmlpath, val):
+    with open(htmlpath, 'r') as f:
+        dfs = pd.read_html(f.read(), match=val, flavor='html5lib')
+        for df in dfs:
+            print(dfutil.firstcol(df))  # 第一列
+            print(dfutil.firstrow(df))  # 第一行

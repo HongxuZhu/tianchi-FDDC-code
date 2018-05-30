@@ -14,3 +14,10 @@ path1:/home/utopia/corpus/stanford-corenlp-full-2018-02-27
 
 path2:stanford-chinese-corenlp-2018-02-27-models.jar in path1
 
+pip3 install html5lib
+
+pip3 install BeautifulSoup4
+
+pip3 install lxml
+
+sudo pip3 install pandas

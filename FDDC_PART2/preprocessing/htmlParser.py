@@ -27,7 +27,7 @@ def levelText(htmlpath):
     soup = BeautifulSoup(open(htmlpath), 'lxml')
     tag = soup.table
     if tag is not None:
-        tag.clear()  # 此时table文法式噪音
+        tag.clear()  # 此时table文法是噪音
     s_arr = []
     for paragraph in soup.find_all('div', type='paragraph'):
         for content in paragraph.find_all('div', type='content'):
@@ -38,7 +38,6 @@ def levelText(htmlpath):
                     s_arr.append(sen)
     return s_arr
 
-
 # testlpath + '1153.html'
 # /home/utopia/corpus/FDDC_part2_data/round1_train_20180518/增减持/html/10243.html
-print(levelText(testlpath + '1153.html'))
+# print(levelText(testlpath + '1153.html'))

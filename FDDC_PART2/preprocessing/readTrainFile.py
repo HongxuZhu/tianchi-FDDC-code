@@ -1,4 +1,4 @@
-import FDDC_PART2.preprocessing.htmlParser as paser
+import FDDC_PART2.preprocessing.htmlParser as parser
 import re
 
 # 公告id,增发对象,发行方式,增发数量,增发金额,锁定期,认购方式
@@ -29,7 +29,7 @@ def find_allheaders_fromhtml(trainpath, htmlpath, index):
 # 20503293 建信基金管理有限责任公司
 def find_header_fromhtml(htmlpath, id, val, dict):
     html = htmlpath + id + '.html'
-    head = paser.show_header(html, val)
+    head = parser.show_header(html, val)
     print(id, val, head)
     if isinstance(head, str):
         head = re.sub('\s+', '', head)

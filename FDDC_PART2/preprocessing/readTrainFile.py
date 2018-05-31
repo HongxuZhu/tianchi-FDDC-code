@@ -33,7 +33,6 @@ def find_allheaders_fromhtml():
                 find_header_fromhtml(id, obj, dict)
     print('----------------- over -----------------')
     print(sorted(dict.items(), key=lambda d: d[1], reverse=True))
-    # bid_org_dict = sorted(bid_org_dict.items(), key=lambda i: i[1][2], reverse=True)
 
 
 # 20503293 建信基金管理有限责任公司

@@ -23,6 +23,7 @@ def show_header(htmlpath, val):
         pass
 
 
+# bug 未修复：句子比实际多
 def levelText(htmlpath):
     soup = BeautifulSoup(open(htmlpath), 'lxml')
     tag = soup.table

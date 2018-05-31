@@ -1,4 +1,6 @@
 # 此处定义3个实体类
+import FDDC_PART2.preprocessing.normalizer as normalizer
+
 
 class Contract:
     # 合同实体
@@ -10,6 +12,6 @@ class Contract:
         self.yifang = fields[2] if length > 2 and fields[2] != '' else 'fddcUndefined'
         self.xiangmu = fields[3] if length > 3 and fields[3] != '' else 'fddcUndefined'
         self.hetong = fields[4] if length > 4 and fields[4] != '' else 'fddcUndefined'
-        self.amount_u = fields[5] if length > 5 and fields[5] != '' else 'fddcUndefined'
-        self.amount_d = fields[6] if length > 6 and fields[6] != '' else 'fddcUndefined'
+        self.amount_u = normalizer.norm_number(fields[5]) if length > 5 and fields[5] != '' else 'fddcUndefined'
+        self.amount_d = normalizer.norm_number(fields[6]) if length > 6 and fields[6] != '' else 'fddcUndefined'
         self.lianhe = fields[7] if length > 7 and fields[7] != '' else 'fddcUndefined'

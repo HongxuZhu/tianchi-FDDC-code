@@ -1,6 +1,7 @@
+import re
+
 import FDDC_PART2.preprocessing.htmlParser as parser
 from FDDC_PART2.preprocessing.entity import Contract
-import re
 
 # 20315972
 # 宁夏汉尧石墨烯储能材料科技有限公司

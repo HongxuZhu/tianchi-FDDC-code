@@ -1,7 +1,10 @@
-from bs4 import BeautifulSoup
-import pandas as pd
-import FDDC_PART2.utils.dataframe as dfutil
 import re
+
+import pandas as pd
+from bs4 import BeautifulSoup
+
+import FDDC_PART2.preprocessing.normalizer as normalizer
+import FDDC_PART2.utils.dataframe as dfutil
 
 testlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/'
 
@@ -35,6 +38,7 @@ def levelText(htmlpath):
             sentences = content.get_text().split('。')
             for sentence in sentences:
                 sen = re.sub('\s+', '', sentence)  # 合并
+                sen = normalizer.norm_number(sen)
                 if len(sen) > 0:
                     s_arr.append(sen)
     return s_arr

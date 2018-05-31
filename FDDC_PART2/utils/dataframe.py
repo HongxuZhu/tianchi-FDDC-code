@@ -16,6 +16,7 @@ def locate(dataframe, val):
             cell = dataframe[col][row]
             if cell == val:
                 head = dataframe[col][0]
+                left = dataframe[0][row]
                 break
     return head
 

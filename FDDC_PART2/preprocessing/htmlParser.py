@@ -37,7 +37,7 @@ def levelText(htmlpath):
         for content in paragraph.find_all('div', type='content'):
             sentences = content.get_text().split('。')
             for sentence in sentences:
-                sen = re.sub('\s+', '', sentence)  # 合并
+                sen = re.sub('\s+', '', sentence)  # 合并，英语怎么处理？
                 sen = normalizer.norm_number(sen)
                 if len(sen) > 0:
                     s_arr.append(sen)

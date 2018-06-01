@@ -13,14 +13,14 @@ def norm_number(line):
     iters = pattern_number.findall(line)
     for iter in iters:
         # 归一化千分位数字表示法
-        num = re.sub(',', '', iter[0])
+        num = iter[0].replace(',', '')
         iswan = True if iter[1] != '' else False
         if iswan:
             f = str((Decimal(num) * 10000).quantize(Decimal('0.000000')))
-            line = re.sub(iter[0] + iter[1], f, line)
+            line = line.replace(iter[0] + iter[1], f)
         else:
             dec = str(Decimal(num).quantize(Decimal('0.000000')))
-            line = re.sub(iter[0], dec, line)
+            line = line.replace(iter[0], dec)
 
     return line
 

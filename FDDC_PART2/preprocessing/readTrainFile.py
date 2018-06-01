@@ -1,4 +1,5 @@
 import FDDC_PART2.preprocessing.htmlParser as parser
+import FDDC_PART2.preprocessing.autoTagging as tagger
 import re
 
 # 公告id,增发对象,发行方式,增发数量,增发金额,锁定期,认购方式
@@ -8,6 +9,15 @@ dz_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/
 # 公告id,甲方,乙方,项目名称,合同名称,合同金额上限,合同金额下限,联合体成员
 ht_trainpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/hetong.train'
 ht_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/'
+
+
+def makeTrainFile(trainpath, htmlpath):
+    with open(trainpath, 'r') as file:
+        for line in file:
+            # line = line[0:len(line) - 2]
+            entity = line.split('\t')
+            id = entity[0]
+            tagger.tag_text(htmlpath + id + '.html', line)
 
 
 def find_allheaders_fromhtml(trainpath, htmlpath, index):
@@ -41,4 +51,5 @@ def find_header_fromhtml(htmlpath, id, val, dict):
         pass
 
 
-find_allheaders_fromhtml(ht_trainpath, ht_htmlpath, 1)
+# find_allheaders_fromhtml(ht_trainpath, ht_htmlpath, 1)
+makeTrainFile(ht_trainpath, ht_htmlpath)

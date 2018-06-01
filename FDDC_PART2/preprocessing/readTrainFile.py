@@ -14,7 +14,7 @@ ht_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大�
 def makeTrainFile(trainpath, htmlpath):
     with open(trainpath, 'r') as file:
         for line in file:
-            # line = line[0:len(line) - 2]
+            line = line[0:len(line) - 1]
             entity = line.split('\t')
             id = entity[0]
             tagger.tag_text(htmlpath + id + '.html', line)

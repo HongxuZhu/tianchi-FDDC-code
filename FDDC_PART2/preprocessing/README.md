@@ -21,3 +21,9 @@ pip3 install BeautifulSoup4
 pip3 install lxml
 
 sudo pip3 install pandas
+
+cd /home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF
+
+python3 /usr/local/bin/tensorboard --logdir=ckpt
+
+python3 main.py --train=True --clean=True --model_type=idcnn/bilstm

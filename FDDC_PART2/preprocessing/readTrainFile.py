@@ -9,15 +9,16 @@ dz_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/
 # 公告id,甲方,乙方,项目名称,合同名称,合同金额上限,合同金额下限,联合体成员
 ht_trainpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/hetong.train'
 ht_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/'
+ht_make_train = open('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/ht_make_train.train', 'a+')
 
 
-def makeTrainFile(trainpath, htmlpath):
+def makeTrainFile(trainpath, htmlpath, makefile):
     with open(trainpath, 'r') as file:
         for line in file:
             line = line[0:len(line) - 1]
             entity = line.split('\t')
             id = entity[0]
-            tagger.tag_text(htmlpath + id + '.html', line)
+            tagger.tag_text(htmlpath + id + '.html', line, makefile)
 
 
 def find_allheaders_fromhtml(trainpath, htmlpath, index):
@@ -52,4 +53,4 @@ def find_header_fromhtml(htmlpath, id, val, dict):
 
 
 # find_allheaders_fromhtml(ht_trainpath, ht_htmlpath, 1)
-makeTrainFile(ht_trainpath, ht_htmlpath)
+makeTrainFile(ht_trainpath, ht_htmlpath, ht_make_train)

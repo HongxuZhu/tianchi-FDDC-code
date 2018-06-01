@@ -16,15 +16,15 @@ trainline = '20315972	宁夏汉尧石墨烯储能材料科技有限公司	湖南
 trainfile = ''
 
 
-def tag_text(htmlpath, trainline):
+def tag_text(htmlpath, trainline, makefile):
     s_arr = parser.levelText(htmlpath)
     contract = Contract(trainline)
     for s in s_arr:
-        mask_contract(s, contract)
+        mask_contract(s, contract, makefile)
 
 
 # 假设各字段之间不相交，对于金额上下限等情况考虑加入附加字段
-def mask_contract(line_source, contract):
+def mask_contract(line_source, contract, makefile):
     tag_arr = ['O'] * len(line_source)
     mask_contract_field(line_source, contract.jiafang, tag_arr, 'JF')
     mask_contract_field(line_source, contract.yifang, tag_arr, 'YF')
@@ -34,13 +34,18 @@ def mask_contract(line_source, contract):
     mask_contract_field(line_source, contract.amount_d, tag_arr, 'AD')
     mask_contract_field(line_source, contract.lianhe, tag_arr, 'LH')
     for i in range(len(line_source)):
-        print(line_source[i] + ' ' + tag_arr[i])
-    print()
+        makefile.write(line_source[i] + ' ' + tag_arr[i] + '\n')
+    makefile.write('\n')
+    print(line_source)
+    print(tag_arr)
 
 
 def mask_contract_field(line_source, val, tag_arr, lebel):
     if val != 'fddcUndefined':
-        # val = re.sub('\(', '\(', val)
+        val = val.replace('(', '\(')
+        val = val.replace(')', '\)')
+        val = val.replace('[', '\[')
+        val = val.replace(']', '\]')
         iters = re.finditer(val, line_source)
         for iter in iters:
             begin, end = iter.span()  # 返回每个匹配坐标

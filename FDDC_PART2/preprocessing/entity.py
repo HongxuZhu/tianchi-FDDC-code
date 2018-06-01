@@ -7,6 +7,7 @@ class Contract:
     def __init__(self, trainline):
         fields = trainline.split('\t')
         length = len(fields)
+        self.count = length  # 字段个数
         self.id = fields[0] if length > 0 and fields[0] != '' else 'fddcUndefined'
         self.jiafang = fields[1] if length > 1 and fields[1] != '' else 'fddcUndefined'
         self.yifang = fields[2] if length > 2 and fields[2] != '' else 'fddcUndefined'

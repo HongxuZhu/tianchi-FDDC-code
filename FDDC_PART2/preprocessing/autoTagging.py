@@ -17,30 +17,33 @@ trainfile = ''
 
 
 def tag_text(htmlpath, trainline, makefile):
-    s_arr = parser.levelText(htmlpath)
+    s_arr = parser.levelText_withtable(htmlpath)
     contract = Contract(trainline)
     for s in s_arr:
         mask_contract(s, contract, makefile)
+    if contract.count != contract.countActual:
+        contract.desc()
+        pass
 
 
 # 假设各字段之间不相交，对于金额上下限等情况考虑加入附加字段
 def mask_contract(line_source, contract, makefile):
     tag_arr = ['O'] * len(line_source)
-    mask_contract_field(line_source, contract.jiafang, tag_arr, 'JF')
-    mask_contract_field(line_source, contract.yifang, tag_arr, 'YF')
-    mask_contract_field(line_source, contract.xiangmu, tag_arr, 'XM')
-    mask_contract_field(line_source, contract.hetong, tag_arr, 'HT')
-    mask_contract_field(line_source, contract.amount_u, tag_arr, 'AU')
-    mask_contract_field(line_source, contract.amount_d, tag_arr, 'AD')
-    mask_contract_field(line_source, contract.lianhe, tag_arr, 'LH')
+    mask_contract_field(line_source, contract.jiafang, tag_arr, 'JF', contract)
+    mask_contract_field(line_source, contract.yifang, tag_arr, 'YF', contract)
+    mask_contract_field(line_source, contract.xiangmu, tag_arr, 'XM', contract)
+    mask_contract_field(line_source, contract.hetong, tag_arr, 'HT', contract)
+    mask_contract_field(line_source, contract.amount_u, tag_arr, 'AU', contract)
+    mask_contract_field(line_source, contract.amount_d, tag_arr, 'AD', contract)
+    mask_contract_field(line_source, contract.lianhe, tag_arr, 'LH', contract)
     for i in range(len(line_source)):
         makefile.write(line_source[i] + ' ' + tag_arr[i] + '\n')
     makefile.write('\n')
-    print(line_source)
-    print(tag_arr)
+    # print(line_source)
+    # print(tag_arr)
 
 
-def mask_contract_field(line_source, val, tag_arr, lebel):
+def mask_contract_field(line_source, val, tag_arr, label, contract):
     if val != 'fddcUndefined':
         val = val.replace('(', '\(')
         val = val.replace(')', '\)')
@@ -49,9 +52,12 @@ def mask_contract_field(line_source, val, tag_arr, lebel):
         iters = re.finditer(val, line_source)
         for iter in iters:
             begin, end = iter.span()  # 返回每个匹配坐标
-            tag_arr[begin] = 'B-' + lebel
+            contract.setStatus(label)
+            tag_arr[begin] = 'B-' + label
             for index in range(begin + 1, end):
-                tag_arr[index] = 'I-' + lebel
+                tag_arr[index] = 'I-' + label
+    else:
+        contract.setStatus(label)
 
 
 def test():

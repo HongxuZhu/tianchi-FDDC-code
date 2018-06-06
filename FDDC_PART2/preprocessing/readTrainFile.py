@@ -19,6 +19,7 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
     c = 0
     with open(trainpath, 'r') as file:
         for line in file:
+            line = line.encode('utf-8').decode('utf-8-sig')
             line = line[0:len(line) - 1]
             entity = line.split('\t')
             id = entity[0]

@@ -43,6 +43,36 @@ def levelText(htmlpath):
                     s_arr.append(sen)
     return s_arr
 
+
+def levelText_withtable(htmlpath):
+    soup = BeautifulSoup(open(htmlpath), 'lxml')
+    s_arr = []
+    for paragraph in soup.find_all('div', type='paragraph'):
+        for content in paragraph.find_all('div', type='content'):
+            tables = content.find_all('table')
+            if len(tables) == 0:  # 假设训练数据中，text和table不同时存在
+                sentences = content.get_text().split('。')
+                for sentence in sentences:
+                    sen = re.sub('\s+', '', sentence)  # 合并，英语怎么处理？
+                    sen = normalizer.norm_number(sen)
+                    if len(sen) > 0:
+                        s_arr.append(sen)
+                        # print(sen)
+            else:
+                for table in tables:
+                    for tr in table.find_all('tr'):
+                        td_arr = []
+                        for td in tr.find_all('td'):
+                            td_text = re.sub('\s+', '', td.get_text())
+                            if len(td_text) > 0:
+                                td_arr.append(td_text)
+                        if len(td_arr) > 0:
+                            s_arr.append('～'.join(td_arr))
+                            # print(td_arr)
+    return s_arr
+
 # testlpath + '1153.html'
 # /home/utopia/corpus/FDDC_part2_data/round1_train_20180518/增减持/html/10243.html
 # print(levelText(testlpath + '1153.html'))
+
+# print(levelText_withtable('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/html/12088.html'))

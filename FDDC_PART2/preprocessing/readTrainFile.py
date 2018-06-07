@@ -24,7 +24,6 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
             entity = line.split('\t')
             id = entity[0]
             c += 1
-            print('----------------- {} -----------------'.format(c))
             mod = int(id) % 6
             if mod < 4:
                 tagger.tag_text(htmlpath + id + '.html', line, train)

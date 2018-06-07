@@ -49,15 +49,13 @@ def mask_contract_field(line_source, val, tag_arr, label, contract):
         val = val.replace(')', '\)')
         val = val.replace('[', '\[')
         val = val.replace(']', '\]')
-        iters = re.finditer(val, line_source)
+        iters = re.finditer(val, line_source, re.I)
         for iter in iters:
             begin, end = iter.span()  # 返回每个匹配坐标
             contract.setStatus(label)
             tag_arr[begin] = 'B-' + label
             for index in range(begin + 1, end):
                 tag_arr[index] = 'I-' + label
-    else:
-        contract.setStatus(label)
 
 
 def test():

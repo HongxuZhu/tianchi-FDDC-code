@@ -54,7 +54,11 @@ def levelText_withtable(htmlpath):
                 sentences = content.get_text().split('。')
                 for sentence in sentences:
                     sen = re.sub('\s+', '', sentence)  # 合并，英语怎么处理？
+                    sen = re.sub('/|"', '', sen)
+                    sen = re.sub('（', '(', sen)
+                    sen = re.sub('）', ')', sen)
                     sen = normalizer.norm_number(sen)
+                    sen = normalizer.norm_xm(sen)
                     if len(sen) > 0:
                         s_arr.append(sen)
                         # print(sen)
@@ -64,10 +68,15 @@ def levelText_withtable(htmlpath):
                         td_arr = []
                         for td in tr.find_all('td'):
                             td_text = re.sub('\s+', '', td.get_text())
+                            td_text = re.sub('/|"', '', td_text)
+                            td_text = re.sub('（', '(', td_text)
+                            td_text = re.sub('）', ')', td_text)
+                            td_text = normalizer.norm_number(td_text)
+                            td_text = normalizer.norm_xm(td_text)
                             if len(td_text) > 0:
                                 td_arr.append(td_text)
                         if len(td_arr) > 0:
-                            s_arr.append('～'.join(td_arr))
+                            s_arr.append('╫'.join(td_arr))
                             # print(td_arr)
     return s_arr
 
@@ -75,4 +84,4 @@ def levelText_withtable(htmlpath):
 # /home/utopia/corpus/FDDC_part2_data/round1_train_20180518/增减持/html/10243.html
 # print(levelText(testlpath + '1153.html'))
 
-# print(levelText_withtable('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/html/12088.html'))
+# print(levelText_withtable('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/36071.html'))

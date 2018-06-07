@@ -28,9 +28,9 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
             if mod < 4:
                 tagger.tag_text(htmlpath + id + '.html', line, train)
             if mod == 4:
-                tagger.tag_text(htmlpath + id + '.html', line, test)
-            if mod == 5:
                 tagger.tag_text(htmlpath + id + '.html', line, dev)
+            if mod == 5:
+                tagger.tag_text(htmlpath + id + '.html', line, test)
 
 
 def find_allheaders_fromhtml(trainpath, htmlpath, index):

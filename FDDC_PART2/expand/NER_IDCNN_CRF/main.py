@@ -188,7 +188,7 @@ def train():
             best = evaluate(sess, model, "dev", dev_manager, id_to_tag, logger)
             if best:
                 save_model(sess, model, FLAGS.ckpt_path, logger)
-            evaluate(sess, model, "test", test_manager, id_to_tag, logger)
+            # evaluate(sess, model, "test", test_manager, id_to_tag, logger)
 
 
 def evaluate_line():

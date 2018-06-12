@@ -209,6 +209,27 @@ def result_to_json(string, tags):
         idx += 1
     return item
 
-
+def result_to_json(string, tags, score):
+    item = {"string": string, "entities": []}
+    entity_name = ""
+    entity_start = 0
+    idx = 0
+    for char, tag in zip(string, tags):
+        if tag[0] == "S":
+            item["entities"].append({"word": char, "start": idx, "end": idx+1, "type":tag[2:]})
+        elif tag[0] == "B":
+            entity_name += char
+            entity_start = idx
+        elif tag[0] == "I":
+            entity_name += char
+        elif tag[0] == "E":
+            entity_name += char
+            item["entities"].append({"word": entity_name, "score": score, "start": entity_start, "end": idx + 1, "type": tag[2:]})
+            entity_name = ""
+        else:
+            entity_name = ""
+            entity_start = idx
+        idx += 1
+    return item
 
 

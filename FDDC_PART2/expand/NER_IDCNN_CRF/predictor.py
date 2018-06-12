@@ -61,6 +61,7 @@ assert FLAGS.optimizer in ["adam", "sgd", "adagrad"]
 
 import os
 
+# 解决项目路径问题
 os.chdir('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF')
 
 

@@ -27,52 +27,42 @@ def show_header(htmlpath, val):
 
 
 # bug 未修复：句子比实际多
-def levelText(htmlpath):
-    soup = BeautifulSoup(open(htmlpath), 'lxml')
-    tag = soup.table
-    if tag is not None:
-        tag.clear()  # 此时table文法是噪音
-    s_arr = []
-    for paragraph in soup.find_all('div', type='paragraph'):
-        for content in paragraph.find_all('div', type='content'):
-            sentences = content.get_text().split('。')
-            for sentence in sentences:
-                sen = re.sub('\s+', '', sentence)  # 合并，英语怎么处理？
-                sen = normalizer.norm_number(sen)
-                if len(sen) > 0:
-                    s_arr.append(sen)
-    return s_arr
-
-
 def levelText_withtable(htmlpath):
     soup = BeautifulSoup(open(htmlpath), 'lxml')
     s_arr = []
     for paragraph in soup.find_all('div', type='paragraph'):
+        p_title = paragraph.attrs.get('title')
+        if p_title is not None:
+            p_title = normalizer.norm(p_title)
+            if len(p_title) > 0:
+                s_arr.append(p_title)
         for content in paragraph.find_all('div', type='content'):
+            c_title = content.attrs.get('title')
+            if c_title is not None:
+                c_title = normalizer.norm(c_title)
+                if len(c_title) > 0:
+                    s_arr.append(c_title)
             tables = content.find_all('table')
-            if len(tables) == 0:  # 假设训练数据中，text和table不同时存在
+            # 假设训练数据中，text和table不同时存在于同一content内
+            if len(tables) == 0:
                 sentences = content.get_text().split('。')
                 for sentence in sentences:
-                    sen = re.sub('\s+', '', sentence)  # 合并，英语怎么处理？
-                    sen = re.sub('/|"', '', sen)
-                    sen = re.sub('（', '(', sen)
-                    sen = re.sub('）', ')', sen)
-                    sen = normalizer.norm_number(sen)
-                    sen = normalizer.norm_xm(sen)
+                    # 合并，英语怎么处理？
+                    sen = normalizer.norm(sentence)
                     if len(sen) > 0:
                         s_arr.append(sen)
                         # print(sen)
             else:
                 for table in tables:
+                    t_title = table.attrs.get('title')
+                    if t_title is not None:
+                        t_title = normalizer.norm(t_title)
+                        if len(t_title) > 0:
+                            s_arr.append(t_title)
                     for tr in table.find_all('tr'):
                         td_arr = []
                         for td in tr.find_all('td'):
-                            td_text = re.sub('\s+', '', td.get_text())
-                            td_text = re.sub('/|"', '', td_text)
-                            td_text = re.sub('（', '(', td_text)
-                            td_text = re.sub('）', ')', td_text)
-                            td_text = normalizer.norm_number(td_text)
-                            td_text = normalizer.norm_xm(td_text)
+                            td_text = normalizer.norm(td.get_text())
                             if len(td_text) > 0:
                                 td_arr.append(td_text)
                         if len(td_arr) > 0:
@@ -83,5 +73,4 @@ def levelText_withtable(htmlpath):
 # testlpath + '1153.html'
 # /home/utopia/corpus/FDDC_part2_data/round1_train_20180518/增减持/html/10243.html
 # print(levelText(testlpath + '1153.html'))
-
-# print(levelText_withtable('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/36071.html'))
+# print(levelText_withtable('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/16773644.html'))

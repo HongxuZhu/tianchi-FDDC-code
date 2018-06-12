@@ -214,6 +214,19 @@ def evaluate_line():
                 print(result)
 
 
+def evaluate_line2():
+    config = load_config(FLAGS.config_file)
+    logger = get_logger(FLAGS.log_file)
+    # limit GPU memory
+    tf_config = tf.ConfigProto()
+    tf_config.gpu_options.allow_growth = True
+    with open(FLAGS.map_file, "rb") as f:
+        char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
+    with tf.Session(config=tf_config) as sess:
+        model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)
+    return model, sess, char_to_id, id_to_tag
+
+
 def main(_):
 
     if FLAGS.train:

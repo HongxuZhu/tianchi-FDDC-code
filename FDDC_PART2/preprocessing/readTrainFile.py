@@ -10,9 +10,9 @@ dz_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/
 ht_trainpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/hetong.train'
 ht_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/'
 
-ht_train = open('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/ht.train', 'a+')
-ht_test = open('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/ht.test', 'a+')
-ht_dev = open('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/ht.dev', 'a+')
+ht_train = open('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF/data/ht.train','a+')
+ht_dev = open('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF/data/ht.dev', 'a+')
+ht_test = open('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF/data/ht.test', 'a+')
 
 
 def makeTrainFile(trainpath, htmlpath, train, test, dev):
@@ -25,12 +25,10 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
             id = entity[0]
             c += 1
             mod = int(id) % 6
-            if mod < 4:
+            if mod < 5:
                 tagger.tag_text(htmlpath + id + '.html', line, train)
-            if mod == 4:
-                tagger.tag_text(htmlpath + id + '.html', line, dev)
             if mod == 5:
-                tagger.tag_text(htmlpath + id + '.html', line, test)
+                tagger.tag_text(htmlpath + id + '.html', line, dev)
 
 
 def find_allheaders_fromhtml(trainpath, htmlpath, index):

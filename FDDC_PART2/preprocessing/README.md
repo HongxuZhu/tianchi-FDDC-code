@@ -27,3 +27,15 @@ cd /home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCN
 python3 /usr/local/bin/tensorboard --logdir=ckpt
 
 python3 main.py --train=True --clean=True --model_type=idcnn/bilstm
+
+gedit ~/.bashrc
+
+export PYTHONPATH=$PYTHONPATH:/home/utopia/github/models/research:/home/utopia/github/models/research/slim:/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2
+
+source ~/.bashrc
+
+echo $PYTHONPATH
+
+cd /home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF
+
+python3 predictor.py

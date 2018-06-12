@@ -35,7 +35,11 @@ def mask_contract(line_source, contract, makefile):
     mask_contract_field(line_source, contract.hetong, tag_arr, 'HT', contract)
     mask_contract_field(line_source, contract.amount_u, tag_arr, 'AU', contract)
     mask_contract_field(line_source, contract.amount_d, tag_arr, 'AD', contract)
-    mask_contract_field(line_source, contract.lianhe, tag_arr, 'LH', contract)
+
+    lhs = contract.lianhe.split('、')
+    for lh in lhs:
+        mask_contract_field(line_source, lh, tag_arr, 'LH', contract)
+
     for i in range(len(line_source)):
         makefile.write(line_source[i] + ' ' + tag_arr[i] + '\n')
     makefile.write('\n')

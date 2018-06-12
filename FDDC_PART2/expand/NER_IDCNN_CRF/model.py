@@ -365,6 +365,7 @@ class Model(object):
             path, _ = viterbi_decode(logits, matrix)
 
             paths.append(path[1:])
+            paths.append(_)
         return paths
 
     def evaluate(self, sess, data_manager, id_to_tag):
@@ -396,4 +397,5 @@ class Model(object):
         lengths, scores = self.run_step(sess, False, inputs)
         batch_paths = self.decode(scores, lengths, trans)
         tags = [id_to_tag[idx] for idx in batch_paths[0]]
-        return result_to_json(inputs[0][0], tags)
+        viterbi_score = batch_paths[1]
+        return result_to_json(inputs[0][0], tags, viterbi_score)

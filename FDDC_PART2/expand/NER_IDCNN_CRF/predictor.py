@@ -212,14 +212,16 @@ def evaluate_line_ht():
         for i in range(0, len(list)):
             htmlpath = os.path.join(rootdir, list[i])
             if os.path.isfile(htmlpath):
-                s_arr = levelText_withtable(htmlpath)
                 print(htmlpath)
-                for sen in s_arr:
+                s_arr = levelText_withtable(htmlpath)
+                for i in range(len(s_arr)):
+                    sen = s_arr[i]
                     result = model.evaluate_line(sess, input_from_line(sen, char_to_id), id_to_tag)
                     entities = result.get('entities')
+                    string = result.get('string')
                     if len(entities) > 0:
                         for en in entities:
-                            print(en)
+                            print(en, i, string)
                 print('-------------------------------------------------')
 
 

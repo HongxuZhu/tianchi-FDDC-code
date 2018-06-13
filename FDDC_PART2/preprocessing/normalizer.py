@@ -15,30 +15,33 @@ pattern_xm_1 = re.compile(reg_xm_1)
 
 
 def norm_number_2bit(line):
-    iters = pattern_number.findall(line)
-    for iter in iters:
-        # 归一化千分位数字表示法
-        num = re.sub(',|，', '', iter[0])
-        iswan = True if iter[1] != '' else False
-        if iswan:
-            if iter[1].find('万') != -1:
-                f = str((Decimal(num) * 10000).quantize(Decimal('0.00')))
+    try:
+        iters = pattern_number.findall(line)
+        for iter in iters:
+            # 归一化千分位数字表示法
+            num = re.sub(',|，', '', iter[0])
+            iswan = True if iter[1] != '' else False
+            if iswan:
+                if iter[1].find('万') != -1:
+                    f = str((Decimal(num) * 10000).quantize(Decimal('0.00')))
+                else:
+                    f = str((Decimal(num) * 100000000).quantize(Decimal('0.00')))
+                if f.endswith('.00'):
+                    f = f[0:len(f) - 3]
+                elif f.endswith('0'):
+                    f = f[0:len(f) - 1]
+                # f = str((Decimal(num) * 10000))
+                line = line.replace(iter[0] + iter[1], f)
             else:
-                f = str((Decimal(num) * 100000000).quantize(Decimal('0.00')))
-            if f.endswith('.00'):
-                f = f[0:len(f) - 3]
-            elif f.endswith('0'):
-                f = f[0:len(f) - 1]
-            # f = str((Decimal(num) * 10000))
-            line = line.replace(iter[0] + iter[1], f)
-        else:
-            dec = str(Decimal(num).quantize(Decimal('0.00')))
-            if dec.endswith('.00'):
-                dec = dec[0:len(dec) - 3]
-            elif dec.endswith('0'):
-                dec = dec[0:len(dec) - 1]
-            # dec = str(Decimal(num))
-            line = line.replace(iter[0], dec)
+                dec = str(Decimal(num).quantize(Decimal('0.00')))
+                if dec.endswith('.00'):
+                    dec = dec[0:len(dec) - 3]
+                elif dec.endswith('0'):
+                    dec = dec[0:len(dec) - 1]
+                # dec = str(Decimal(num))
+                line = line.replace(iter[0], dec)
+    except:
+        pass
     return line
 
 

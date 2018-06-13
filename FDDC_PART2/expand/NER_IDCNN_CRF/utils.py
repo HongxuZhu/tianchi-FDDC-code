@@ -216,7 +216,7 @@ def result_to_json(string, tags, score):
     idx = 0
     for char, tag in zip(string, tags):
         if tag[0] == "S":
-            item["entities"].append({"word": char, "start": idx, "end": idx+1, "type":tag[2:]})
+            item["entities"].append({"word": char, "type": tag[2:], "score": score, "start": idx, "end": idx + 1})
         elif tag[0] == "B":
             entity_name += char
             entity_start = idx
@@ -224,12 +224,10 @@ def result_to_json(string, tags, score):
             entity_name += char
         elif tag[0] == "E":
             entity_name += char
-            item["entities"].append({"word": entity_name, "score": score, "start": entity_start, "end": idx + 1, "type": tag[2:]})
+            item["entities"].append({"word": entity_name, "type": tag[2:], "score": score, "start": entity_start, "end": idx + 1})
             entity_name = ""
         else:
             entity_name = ""
             entity_start = idx
         idx += 1
     return item
-
-

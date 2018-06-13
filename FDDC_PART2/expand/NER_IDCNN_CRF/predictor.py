@@ -197,7 +197,7 @@ def train():
             # evaluate(sess, model, "test", test_manager, id_to_tag, logger)
 
 
-def evaluate_line_ht(htmlpath):
+def evaluate_line_ht():
     config = load_config(FLAGS.config_file)
     logger = get_logger(FLAGS.log_file)
     # limit GPU memory
@@ -206,19 +206,37 @@ def evaluate_line_ht(htmlpath):
     with open(FLAGS.map_file, "rb") as f:
         char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
     with tf.Session(config=tf_config) as sess:
-        s_arr = levelText_withtable(htmlpath)
         model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)
-        for sen in s_arr:
-            result = model.evaluate_line(sess, input_from_line(sen, char_to_id), id_to_tag)
-            entities = result.get('entities')
-            if len(entities) > 0:
-                for en in entities:
-                    print(en)
+        rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/重大合同/html/'
+        list = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
+        for i in range(0, len(list)):
+            htmlpath = os.path.join(rootdir, list[i])
+            if os.path.isfile(htmlpath):
+                s_arr = levelText_withtable(htmlpath)
+                print(htmlpath)
+                for sen in s_arr:
+                    result = model.evaluate_line(sess, input_from_line(sen, char_to_id), id_to_tag)
+                    entities = result.get('entities')
+                    if len(entities) > 0:
+                        for en in entities:
+                            print(en)
+                print('-------------------------------------------------')
+
+
+def eachfile_ht():
+    rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/重大合同/html/'
+    list = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
+    for i in range(0, len(list)):
+        path = os.path.join(rootdir, list[i])
+        if os.path.isfile(path):
+            print(path)
 
 
 def main(_):
     line = '近日，江苏中天科技股份有限公司（上证代码： 600522 ，以下简称“中天科技股份”或“公司”）及控股子公司中天科技海缆有限公司（以下简称“中天科技海缆”）分别收到中标通知书，确认中天科技股份为盛东如东海上风力发电有限责任公司“海装如东海上风电场工程（如东 H3# ）海底光电复合电缆及附件”招标项目的中标人、中天科技海缆为“国家电网公司输变电项目 2017 年（新增）变电设备（含电缆）招标采购-电力电缆及电缆附件”招标项目的中标人，现将中标情况公告如下：'
-    evaluate_line_ht('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/16773644.html')
+    # evaluate_line_ht('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/16773644.html')
+    # evaluate_line_ht('/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/重大合同/html/68')
+    evaluate_line_ht()
 
 
 if __name__ == "__main__":

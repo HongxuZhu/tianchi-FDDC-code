@@ -32,3 +32,18 @@ CREATE TABLE IF NOT EXISTS `zengjianchi`(
    `变动后持股数` BIGINT(20),
    `变动后持股比例` DECIMAL(22,4)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOAD DATA LOCAL INFILE '/media/utopia/U16G/[new] FDDC_announcements_round1_train_result_20180605/dingzeng.train'
+ INTO TABLE dingzeng
+ CHARACTER SET utf8
+ FIELDS TERMINATED BY '\t';
+
+ LOAD DATA LOCAL INFILE '/media/utopia/U16G/[new] FDDC_announcements_round1_train_result_20180605/hetong.train'
+ INTO TABLE hetong
+ CHARACTER SET utf8
+ FIELDS TERMINATED BY '\t';
+
+ LOAD DATA LOCAL INFILE '/media/utopia/U16G/[new] FDDC_announcements_round1_train_result_20180605/zengjianchi.train'
+ INTO TABLE zengjianchi
+ CHARACTER SET utf8
+ FIELDS TERMINATED BY '\t';

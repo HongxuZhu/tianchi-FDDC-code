@@ -24,10 +24,11 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
             entity = line.split('\t')
             id = entity[0]
             c += 1
-            mod = int(id) % 6
-            if mod < 5:
+            rank = 6
+            mod = int(id) % rank
+            if mod < (rank - 1):
                 tagger.tag_text(htmlpath + id + '.html', line, train)
-            if mod == 5:
+            if mod == (rank - 1):
                 tagger.tag_text(htmlpath + id + '.html', line, dev)
 
 

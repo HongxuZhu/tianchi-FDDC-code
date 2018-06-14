@@ -221,6 +221,9 @@ def evaluate_line_ht(htmlpath):
 
 
 def evaluate_ht():
+    submit_path_ht = 'submit_sample/hetong.csv'
+    submit_path_file = open(submit_path_ht, 'a+', encoding='gbk')
+    submit_path_file.write('公告id,甲方,乙方,项目名称,合同名称,合同金额上限,合同金额下限,联合体成员\n')
     config = load_config(FLAGS.config_file)
     logger = get_logger(FLAGS.log_file)
     # limit GPU memory
@@ -247,11 +250,11 @@ def evaluate_ht():
                             en['sid'] = j
                             en['pid'] = list[i]
                             candidates.append(en)
-                org_ht(candidates)
+                org_ht(candidates, submit_path_file)
                 print('-------------------------------------------------')
 
 
-def org_ht(candidates):
+def org_ht(candidates, submit_path_file):
     # pid,YF,JY为联合主键，YF不为空
     types = {'JF': [], 'YF': [], 'XM': [], 'HT': [], 'AU': [], 'AD': [], 'LH': []}
     if len(candidates) > 0:
@@ -273,10 +276,10 @@ def org_ht(candidates):
         for yfword in yfset:  # 因为乙方不为空，所以先确定乙方
             # 假设乙方只出现一次，假设不成立但可以容忍
             near_jf = findNearest(jfs, yfs, yfword, False)
-            near_xm = findNearest(xms, yfs, yfword, True)
-            near_ht = findNearest(hts, yfs, yfword, True)
-            near_au = findNearest(aus, yfs, yfword, True)
-            near_ad = findNearest(ads, yfs, yfword, True)
+            near_xm = findNearest(xms, yfs, yfword, False)
+            near_ht = findNearest(hts, yfs, yfword, False)
+            near_au = findNearest(aus, yfs, yfword, False)
+            near_ad = findNearest(ads, yfs, yfword, False)
             near_lh = findNearest(lhs, yfs, yfword, False)
 
             if near_au == '':
@@ -301,15 +304,10 @@ def org_ht(candidates):
             ht.append(near_au)
             ht.append(near_ad)
             ht.append(near_lh)
-            submit_ht(ht)
+            submit_ht(ht, submit_path_file)
 
 
-submit_path_ht = 'submit/hetong.csv'
-submit_path_file = open(submit_path_ht, 'a+', encoding='gbk')
-submit_path_file.write('公告id,甲方,乙方,项目名称,合同名称,合同金额上限,合同金额下限,联合体成员\n')
-
-
-def submit_ht(ht):
+def submit_ht(ht, submit_path_file):
     pid = ht[0]
     near_jf = ht[1]
     yfword = ht[2]

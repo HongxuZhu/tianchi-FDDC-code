@@ -197,7 +197,30 @@ def train():
             # evaluate(sess, model, "test", test_manager, id_to_tag, logger)
 
 
-def evaluate_line_ht():
+def evaluate_line_ht(htmlpath):
+    config = load_config(FLAGS.config_file)
+    logger = get_logger(FLAGS.log_file)
+    # limit GPU memory
+    tf_config = tf.ConfigProto()
+    tf_config.gpu_options.allow_growth = True
+    with open(FLAGS.map_file, "rb") as f:
+        char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
+    with tf.Session(config=tf_config) as sess:
+        model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)
+        print(htmlpath)
+        s_arr = levelText_withtable(htmlpath)
+        for j in range(len(s_arr)):
+            sen = s_arr[j]
+            result = model.evaluate_line(sess, input_from_line(sen, char_to_id), id_to_tag)
+            entities = result.get('entities')
+            if len(entities) > 0:
+                for en in entities:
+                    en['sid'] = j
+                    print(en)
+        print('-------------------------------------------------')
+
+
+def evaluate_ht():
     config = load_config(FLAGS.config_file)
     logger = get_logger(FLAGS.log_file)
     # limit GPU memory
@@ -214,31 +237,120 @@ def evaluate_line_ht():
             if os.path.isfile(htmlpath):
                 print(htmlpath)
                 s_arr = levelText_withtable(htmlpath)
-                for i in range(len(s_arr)):
-                    sen = s_arr[i]
+                candidates = []
+                for j in range(len(s_arr)):
+                    sen = s_arr[j]
                     result = model.evaluate_line(sess, input_from_line(sen, char_to_id), id_to_tag)
                     entities = result.get('entities')
-                    string = result.get('string')
                     if len(entities) > 0:
                         for en in entities:
-                            print(en, i, string)
+                            en['sid'] = j
+                            en['pid'] = list[i]
+                            candidates.append(en)
+                org_ht(candidates)
                 print('-------------------------------------------------')
 
 
-def eachfile_ht():
-    rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/重大合同/html/'
-    list = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
-    for i in range(0, len(list)):
-        path = os.path.join(rootdir, list[i])
-        if os.path.isfile(path):
-            print(path)
+def org_ht(candidates):
+    # pid,YF,JY为联合主键，YF不为空
+    types = {'JF': [], 'YF': [], 'XM': [], 'HT': [], 'AU': [], 'AD': [], 'LH': []}
+    if len(candidates) > 0:
+        pid = candidates[0]['pid']
+        for can in candidates:
+            type = can.get('type')
+            types[type].append(can)
+        jfs = types['JF']
+        yfs = types['YF']
+        xms = types['XM']
+        hts = types['HT']
+        aus = types['AU']
+        ads = types['AD']
+        lhs = types['LH']
+
+        yfset = set()
+        for yf in yfs:
+            yfset.add(yf['word'])
+        for yfword in yfset:  # 因为乙方不为空，所以先确定乙方
+            # 假设乙方只出现一次，假设不成立但可以容忍
+            near_jf = findNearest(jfs, yfs, yfword, False)
+            near_xm = findNearest(xms, yfs, yfword, True)
+            near_ht = findNearest(hts, yfs, yfword, True)
+            near_au = findNearest(aus, yfs, yfword, True)
+            near_ad = findNearest(ads, yfs, yfword, True)
+            near_lh = findNearest(lhs, yfs, yfword, False)
+
+            if near_au == '':
+                near_au = near_ad
+            if near_ad == '':
+                near_ad = near_au
+            tmp = 0
+            if near_au < near_ad:
+                tmp = near_ad
+                near_ad = near_au
+                near_au = tmp
+
+            # 甲方被消费掉则清除
+            jfs = filter(lambda x: x['word'] != near_jf, jfs)  # 满足条件则保留
+
+            ht = []
+            ht.append(pid)
+            ht.append(near_jf)
+            ht.append(yfword)
+            ht.append(near_xm)
+            ht.append(near_ht)
+            ht.append(near_au)
+            ht.append(near_ad)
+            ht.append(near_lh)
+            submit_ht(ht)
+
+
+submit_path_ht = 'submit/hetong.csv'
+submit_path_file = open(submit_path_ht, 'a+', encoding='gbk')
+submit_path_file.write('公告id,甲方,乙方,项目名称,合同名称,合同金额上限,合同金额下限,联合体成员\n')
+
+
+def submit_ht(ht):
+    pid = ht[0]
+    near_jf = ht[1]
+    yfword = ht[2]
+    near_xm = ht[3]
+    near_ht = ht[4]
+    near_au = ht[5]
+    near_ad = ht[6]
+    near_lh = ht[7]
+    print('pid={},JF={},YF={},XM={},HT={},AU={},AD={},LH={}'
+          .format(pid, near_jf, yfword, near_xm, near_ht, near_au, near_ad, near_lh))
+
+    line = ','.join(ht) + '\n'
+    submit_path_file.write(line)
+
+
+def findNearest(subTypesTarget, subTypesSource, source, flag):
+    min_sid_distance = 100000
+    min_word_distance = 100000
+    target = ''
+    for ss in subTypesSource:
+        if ss['word'] == source:
+            for st in subTypesTarget:
+                if flag or st['word'] != source:  # 右半个条件特意考虑甲方和乙方不同，且乙方识别率高
+                    sid_distance = abs(ss['sid'] - st['sid'])
+                    if sid_distance < min_sid_distance:
+                        min_sid_distance = sid_distance
+                        target = st['word']
+                    elif sid_distance == min_sid_distance:
+                        word_distance = min(abs(ss['start'] - st['end']), abs(ss['end'] - st['start']))
+                        if word_distance < min_word_distance:
+                            min_word_distance = word_distance
+                            target = st['word']
+    return target
 
 
 def main(_):
     line = '近日，江苏中天科技股份有限公司（上证代码： 600522 ，以下简称“中天科技股份”或“公司”）及控股子公司中天科技海缆有限公司（以下简称“中天科技海缆”）分别收到中标通知书，确认中天科技股份为盛东如东海上风力发电有限责任公司“海装如东海上风电场工程（如东 H3# ）海底光电复合电缆及附件”招标项目的中标人、中天科技海缆为“国家电网公司输变电项目 2017 年（新增）变电设备（含电缆）招标采购-电力电缆及电缆附件”招标项目的中标人，现将中标情况公告如下：'
     # evaluate_line_ht('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/16773644.html')
     # evaluate_line_ht('/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/重大合同/html/68')
-    evaluate_line_ht()
+    # evaluate_line_ht('/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/重大合同/html/122957.html')
+    evaluate_ht()
 
 
 if __name__ == "__main__":

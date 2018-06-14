@@ -24,12 +24,12 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
             entity = line.split('\t')
             id = entity[0]
             c += 1
-            rank = 6
+            rank = 10
             mod = int(id) % rank
-            if mod < (rank - 1):
-                tagger.tag_text(htmlpath + id + '.html', line, train)
-            if mod == (rank - 1):
+            if mod == 4:
                 tagger.tag_text(htmlpath + id + '.html', line, dev)
+            else:
+                tagger.tag_text(htmlpath + id + '.html', line, train)
 
 
 def find_allheaders_fromhtml(trainpath, htmlpath, index):

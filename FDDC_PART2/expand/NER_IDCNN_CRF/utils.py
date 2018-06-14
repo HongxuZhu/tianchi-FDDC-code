@@ -209,7 +209,7 @@ def result_to_json(string, tags):
         idx += 1
     return item
 
-def result_to_json(string, tags, score):
+def result_to_json_score(string, tags, score):
     item = {"string": string, "entities": []}
     entity_name = ""
     entity_start = 0

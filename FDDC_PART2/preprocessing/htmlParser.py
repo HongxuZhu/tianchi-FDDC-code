@@ -52,6 +52,11 @@ def levelText_withtable(htmlpath):
                     if len(sen) > 0:
                         s_arr.append(sen)
                         # print(sen)
+                '''
+                sen = normalizer.norm(content.get_text())
+                if len(sen) > 0:
+                    s_arr.append(sen)
+                '''
             else:
                 for table in tables:
                     t_title = table.attrs.get('title')

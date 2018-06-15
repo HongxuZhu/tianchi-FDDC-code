@@ -28,6 +28,14 @@ count(distinct `公告id`,`联合体成员`) g,
 count(CASE WHEN `合同金额上限`=`合同金额下限` THEN 1 END) h,
 count(distinct `公告id`,`乙方`,`甲方`)
 from hetong;
+# 一个甲方发布多个 35/3138
+select `公告id`,`甲方`,count(distinct `乙方`) c from hetong
+group by `公告id`,`甲方` having c>1
+order by c desc;
+# 一个乙方中标多个 145/2982
+select `公告id`,`乙方`,count(distinct `甲方`) c from hetong
+group by `公告id`,`乙方` having c>1
+order by c desc;
 
 select `公告id`,count(1) c
 from hetong group by `公告id`

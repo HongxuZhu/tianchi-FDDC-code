@@ -34,7 +34,7 @@ flags.DEFINE_boolean("pre_emb",     True,       "Wither use pre-trained embeddin
 flags.DEFINE_boolean("zeros",       False,      "Wither replace digits with zero")
 flags.DEFINE_boolean("lower",       True,       "Wither lower case")
 
-flags.DEFINE_integer("max_epoch",   40,        "maximum training epochs")
+flags.DEFINE_integer("max_epoch",   50,        "maximum training epochs")
 flags.DEFINE_integer("steps_check", 100,        "steps per checkpoint")
 flags.DEFINE_string("ckpt_path",    "ckpt",      "Path to save model")
 flags.DEFINE_string("summary_path", "summary",      "Path to store summaries")

@@ -32,6 +32,34 @@ def makeTrainFile(trainpath, htmlpath, train, test, dev):
                 tagger.tag_text(htmlpath + id + '.html', line, train)
 
 
+def makeTrainFile_ht(trainpath, htmlpath, train, test, dev):
+    conunion = getContractUnion(trainpath)
+    for id in conunion.keys():
+        html = htmlpath + id + '.html'
+        conarray = conunion.get(id)
+        rank = 10
+        mod = int(id) % rank
+        if mod == 5:
+            tagger.tagContract(html, conarray, dev)
+        else:
+            tagger.tagContract(html, conarray, train)
+
+
+def getContractUnion(trainpath):
+    cons = {}
+    with open(trainpath, 'r') as file:
+        for line in file:
+            line = line.encode('utf-8').decode('utf-8-sig')
+            line = line[0:len(line) - 1]
+            con = tagger.getContract(line)
+            conarray = cons.get(con.id)
+            if conarray is not None:
+                cons[con.id].append(con)
+            else:
+                cons[con.id] = [con]
+    return cons
+
+
 def find_allheaders_fromhtml(trainpath, htmlpath, index):
     dict = {}
     with open(trainpath, 'r') as file:
@@ -64,4 +92,5 @@ def find_header_fromhtml(htmlpath, id, val, dict):
 
 
 # find_allheaders_fromhtml(ht_trainpath, ht_htmlpath, 1)
-makeTrainFile(ht_trainpath, ht_htmlpath, ht_train, ht_test, ht_dev)
+# makeTrainFile(ht_trainpath, ht_htmlpath, ht_train, ht_test, ht_dev)
+makeTrainFile_ht(ht_trainpath, ht_htmlpath, ht_train, ht_test, ht_dev)

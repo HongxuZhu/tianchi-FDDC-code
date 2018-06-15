@@ -83,4 +83,4 @@ class Contract:
             print('AD lost when makefile {}'.format(self.amount_d))
         if self.labelDict['LH'] == 0 and self.lianhe != 'fddcUndefined':
             print('LH lost when makefile {}'.format(self.lianhe))
-        print()
+        print('----------------- over -----------------')

@@ -2,6 +2,7 @@
 import itertools
 import os
 import pickle
+import re
 from collections import OrderedDict
 
 import numpy as np
@@ -254,6 +255,7 @@ def evaluate_ht():
                 print('-------------------------------------------------')
 
 
+'''
 def org_ht(candidates, submit_path_file):
     # pid,YF,JY为联合主键，YF不为空
     types = {'JF': [], 'YF': [], 'XM': [], 'HT': [], 'AU': [], 'AD': [], 'LH': []}
@@ -305,6 +307,70 @@ def org_ht(candidates, submit_path_file):
             ht.append(near_ad)
             ht.append(near_lh)
             submit_ht(ht, submit_path_file)
+'''
+
+
+def org_ht(candidates, submit_path_file):
+    # pid,YF,JY为联合主键，YF不为空
+    types = {'JF': [], 'YF': [], 'XM': [], 'HT': [], 'AU': [], 'AD': [], 'LH': []}
+    if len(candidates) > 0:
+        pid = candidates[0]['pid']
+        for can in candidates:
+            type = can.get('type')
+            types[type].append(can)
+        jfs = types['JF']
+        yfs = types['YF']
+        xms = types['XM']
+        hts = types['HT']
+        aus = types['AU']
+        ads = types['AD']
+        lhs = types['LH']
+
+        yfset = set()
+        for yf in yfs:
+            yfset.add(yf['word'])
+
+        pair_jf = findNearestPair(jfs, yfs)
+        pair_xm = findNearestPair(xms, yfs)
+        pair_ht = findNearestPair(hts, yfs)
+        pair_au = findNearestPair(aus, yfs)
+        pair_ad = findNearestPair(ads, yfs)
+        pair_lh = findNearestPair(lhs, yfs)
+        for yfword in yfset:  # 因为乙方不为空，所以先确定乙方
+            near_jf = find_near(pair_jf, yfword)
+            near_xm = find_near(pair_xm, yfword)
+            near_ht = find_near(pair_ht, yfword)
+            near_au = find_near(pair_au, yfword)
+            near_ad = find_near(pair_ad, yfword)
+            near_lh = find_near(pair_lh, yfword)
+
+            if near_au == '':
+                near_au = near_ad
+            if near_ad == '':
+                near_ad = near_au
+            if near_au < near_ad:
+                tmp = near_ad
+                near_ad = near_au
+                near_au = tmp
+
+            ht = []
+            ht.append(pid)
+            ht.append(near_jf)
+            ht.append(yfword)
+            ht.append(near_xm)
+            ht.append(near_ht)
+            ht.append(near_au)
+            ht.append(near_ad)
+            ht.append(near_lh)
+            submit_ht(ht, submit_path_file)
+
+
+def find_near(pairs, word):
+    for pair in pairs:
+        if pair[1] == word:
+            return pair[0]
+            # return re.sub(',', '', pair[0])
+    return ''
 
 
 def submit_ht(ht, submit_path_file):
@@ -341,6 +407,34 @@ def findNearest(subTypesTarget, subTypesSource, source, flag):
                             min_word_distance = word_distance
                             target = st['word']
     return target
+
+
+def findNearestPair(subTypesTarget, subTypesPK):
+    list = []
+    for sk in subTypesPK:
+        pk = sk['word']
+        if len(subTypesTarget) == 0:
+            list.append(('', pk, 100000, 100000))
+        else:
+            for st in subTypesTarget:
+                if pk != st['word']:
+                    sid_distance = abs(sk['sid'] - st['sid'])
+                    word_distance = min(abs(sk['start'] - st['end']), abs(sk['end'] - st['start']))
+                    target = st['word']
+                    list.append((target, pk, sid_distance, word_distance))
+    list.sort(key=lambda x: (x[2], x[3]))
+
+    pairs = []
+    pkset = set()
+    tergset = set()
+    for candidate in list:
+        temp_t = candidate[0]
+        temp_s = candidate[1]
+        if temp_s not in pkset and temp_t not in tergset:
+            pkset.add(temp_s)
+            tergset.add(temp_t)
+            pairs.append((temp_t, temp_s))
+    return pairs
 
 
 def main(_):

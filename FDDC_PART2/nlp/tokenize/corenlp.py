@@ -34,9 +34,10 @@ print(corenlp.word_tokenize(sentence))
 # print(corenlp.parse(sentence))
 # print(corenlp.dependency_parse(sentence))
 
-# 结论：jieba挺好
 
 words = segmentor.segment(sentence)  # 分词
 words_list = list(words)
 print(words_list)
 segmentor.release()  # 释放模型
+
+# 结论：jieba挺好

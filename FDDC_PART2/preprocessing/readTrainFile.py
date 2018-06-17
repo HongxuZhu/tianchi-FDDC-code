@@ -15,23 +15,6 @@ ht_dev = open('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/exp
 ht_test = open('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF/data/ht.test', 'a+')
 
 
-def makeTrainFile(trainpath, htmlpath, train, test, dev):
-    c = 0
-    with open(trainpath, 'r') as file:
-        for line in file:
-            line = line.encode('utf-8').decode('utf-8-sig')
-            line = line[0:len(line) - 1]
-            entity = line.split('\t')
-            id = entity[0]
-            c += 1
-            rank = 10
-            mod = int(id) % rank
-            if mod == 4:
-                tagger.tag_text(htmlpath + id + '.html', line, dev)
-            else:
-                tagger.tag_text(htmlpath + id + '.html', line, train)
-
-
 def makeTrainFile_ht(trainpath, htmlpath, train, test, dev):
     conunion = getContractUnion(trainpath)
     for id in conunion.keys():

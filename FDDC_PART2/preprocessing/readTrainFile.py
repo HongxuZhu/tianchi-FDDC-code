@@ -48,13 +48,16 @@ def find_allheaders_fromhtml(trainpath, htmlpath, index):
     with open(trainpath, 'r') as file:
         id = None
         for line in file:
+            line = line.encode('utf-8').decode('utf-8-sig')
+            line = line[0:len(line) - 1]
             entity = line.split('\t')
             length = len(entity)
             if length > index:
                 if entity[0] != id:
                     id = entity[0]
                     val = entity[index]
-                    find_header_fromhtml(htmlpath, id, val, dict)
+                    if val != '':
+                        find_header_fromhtml(htmlpath, id, val, dict)
     print('----------------- over -----------------')
     print(sorted(dict.items(), key=lambda d: d[1], reverse=True))
 
@@ -74,6 +77,7 @@ def find_header_fromhtml(htmlpath, id, val, dict):
         pass
 
 
-# find_allheaders_fromhtml(ht_trainpath, ht_htmlpath, 1)
+find_allheaders_fromhtml(dz_trainpath, dz_htmlpath, 4)
 # makeTrainFile(ht_trainpath, ht_htmlpath, ht_train, ht_test, ht_dev)
-makeTrainFile_ht(ht_trainpath, ht_htmlpath, ht_train, ht_test, ht_dev)
+
+# makeTrainFile_ht(ht_trainpath, ht_htmlpath, ht_train, ht_test, ht_dev)

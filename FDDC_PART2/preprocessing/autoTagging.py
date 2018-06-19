@@ -1,7 +1,7 @@
 import re
 
 import FDDC_PART2.preprocessing.htmlParser as parser
-from FDDC_PART2.preprocessing.entity import Contract
+from FDDC_PART2.preprocessing.entity import Contract, DingZeng
 
 # 20315972
 # 宁夏汉尧石墨烯储能材料科技有限公司
@@ -38,6 +38,11 @@ def tagContract(htmlpath, conarray, makefile):
 def getContract(trainline):
     contract = Contract(trainline)
     return contract
+
+
+def getDingZeng(trainline):
+    dingzeng = DingZeng(trainline)
+    return dingzeng
 
 
 def mask_contractUnion(line_source, conarray, makefile):

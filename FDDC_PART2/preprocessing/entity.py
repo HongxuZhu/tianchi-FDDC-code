@@ -84,3 +84,54 @@ class Contract:
         if self.labelDict['LH'] == 0 and self.lianhe != 'fddcUndefined':
             print('LH lost when makefile {}'.format(self.lianhe))
         print('----------------- over -----------------')
+
+
+class DingZeng():
+    # 定增实体
+    def __init__(self, trainline):
+        fields = trainline.split('\t')
+        length = len(fields)
+        self.count = 0  # 字段预期个数
+        self.countActual = 0  # 字段实际个数
+
+        if length > 0 and fields[0] != '':
+            self.id = fields[0]
+        else:
+            self.id = 'fddcUndefined'
+
+        if length > 1 and fields[1] != '':
+            self.duixiang = fields[1]
+            self.count += 1
+        else:
+            self.duixiang = 'fddcUndefined'
+
+        if length > 2 and fields[2] != '':
+            self.shuliang = fields[2]
+            self.count += 1
+        else:
+            self.shuliang = 'fddcUndefined'
+
+        if length > 3 and fields[3] != '':
+            self.jine = fields[3]
+            self.count += 1
+        else:
+            self.jine = 'fddcUndefined'
+
+        if length > 4 and fields[4] != '':
+            self.suoding = fields[4]
+            self.count += 1
+        else:
+            self.suoding = 'fddcUndefined'
+
+        if length > 5 and fields[5] != '':
+            self.rengou = fields[5]
+            self.count += 1
+        else:
+            self.rengou = 'fddcUndefined'
+
+        self.labelDict = {'DX': 0, 'SL': 0, 'JE': 0, 'SD': 0, 'RG': 0}
+
+    def setStatus(self, label):
+        if self.labelDict[label] == 0:
+            self.labelDict[label] = 1
+            self.countActual += 1

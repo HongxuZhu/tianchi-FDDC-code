@@ -19,14 +19,14 @@ reg_duixiang = '(' \
                '(名称|全称|姓名|名册)?'  # $
 pattern_duixiang = re.compile(reg_duixiang)
 
-dataroot = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF/data/'
+dataroot = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/NER_IDCNN_CRF/data/'
 model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/cooking.ftz'
 dz_pk_cls_table_model = getModel(model_path)
 
 
 def searchTable3():
-    dz_train = open(dataroot + 'dz.train', 'a+')
-    dz_dev = open(dataroot + 'dz.dev', 'a+')
+    dz_train = open(dataroot + 'dz_pk_table.train', 'a+')
+    dz_dev = open(dataroot + 'dz_pk_table.dev', 'a+')
 
     dingzengs = getDingZengUnion(dz_trainpath)
     for id in dingzengs.keys():

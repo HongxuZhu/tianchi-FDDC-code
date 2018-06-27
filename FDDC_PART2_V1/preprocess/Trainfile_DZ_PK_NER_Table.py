@@ -3,10 +3,8 @@ import re
 from bs4 import BeautifulSoup
 
 from FDDC_PART2.preprocessing.QANetTrainFile import getDingZengUnion
-from FDDC_PART2.preprocessing.normalizer import norm_text
-from FDDC_PART2_V1.preprocess.tableHandler import table2array
 from FDDC_PART2_V1.nlp.classification.textCls import getModel, predict
-from FDDC_PART2_V1.preprocess.Trainfile_DZ_PK_CLS_Table import hasPK
+from FDDC_PART2_V1.preprocess.tableHandler import table2array
 
 # 公告id,增发对象,发行方式,增发数量,增发金额,锁定期,认购方式
 dz_trainpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/dingzeng.train'
@@ -57,30 +55,25 @@ def searchTable3():
                         top_arr = ['O'] * len(topcell)
                         left_arr = ['O'] * len(leftcell)
 
-                        if row == 0 and col == 0:
-                            pass
-                        elif row == 0 and col != 0:
-                            valuecell = leftcell + valuecell
-                            tag_arr = left_arr + tag_arr
-                        elif row != 0 and col == 0:
-                            valuecell = topcell + valuecell
-                            tag_arr = top_arr + tag_arr
-                        else:
-                            valuecell = topcell + leftcell + valuecell
-                            tag_arr = top_arr + left_arr + tag_arr
-                        # if matchDuixiang(valuecell):
-                        #     for dz in dzs:
-                        #         mask_contract_field(valuecell, dz.duixiang, tag_arr, 'DX', dz)
-                        #     for i in range(len(valuecell)):
-                        #         makefile.write(valuecell[i] + ' ' + tag_arr[i] + '\n')
-                        #     makefile.write('\n')
-
-                        has = False
+                        isTrain = False
                         for dz in dzs:
-                            if hasPK(valuecell, dz.duixiang, 'DX', dz):
-                                has = True
-                                break
-                        if has:
+                            if mask_contract_field(valuecell, dz.duixiang, tag_arr, 'DX', dz):
+                                isTrain = True
+
+                        if isTrain:
+
+                            if row == 0 and col == 0:
+                                pass
+                            elif row == 0 and col != 0:
+                                valuecell = leftcell + valuecell
+                                tag_arr = left_arr + tag_arr
+                            elif row != 0 and col == 0:
+                                valuecell = topcell + valuecell
+                                tag_arr = top_arr + tag_arr
+                            else:
+                                valuecell = topcell + leftcell + valuecell
+                                tag_arr = top_arr + left_arr + tag_arr
+
                             for i in range(len(valuecell)):
                                 makefile.write(valuecell[i] + ' ' + tag_arr[i] + '\n')
                             makefile.write('\n')

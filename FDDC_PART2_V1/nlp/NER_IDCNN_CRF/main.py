@@ -27,14 +27,14 @@ flags.DEFINE_string("tag_schema",   "iobes",    "tagging schema iobes or iob")
 # configurations for training
 flags.DEFINE_float("clip",          5,          "Gradient clip")
 flags.DEFINE_float("dropout",       0.5,        "Dropout rate")
-flags.DEFINE_float("batch_size",    20,         "batch size")
+flags.DEFINE_integer("batch_size",  100,        "batch size")
 flags.DEFINE_float("lr",            0.001,      "Initial learning rate")
 flags.DEFINE_string("optimizer",    "adam",     "Optimizer for training")
 flags.DEFINE_boolean("pre_emb",     True,       "Wither use pre-trained embedding")
 flags.DEFINE_boolean("zeros",       False,      "Wither replace digits with zero")
 flags.DEFINE_boolean("lower",       True,       "Wither lower case")
 
-flags.DEFINE_integer("max_epoch",   100,        "maximum training epochs")
+flags.DEFINE_integer("max_epoch",   50,        "maximum training epochs")
 flags.DEFINE_integer("steps_check", 100,        "steps per checkpoint")
 flags.DEFINE_string("ckpt_path",    "ckpt/dingzeng/table_pk",      "Path to save model")
 flags.DEFINE_string("summary_path", "summary",      "Path to store summaries")
@@ -174,7 +174,7 @@ def train():
         model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)
         logger.info("start training")
         loss = []
-        for i in range(100):
+        for i in range(FLAGS.max_epoch):
             for batch in train_manager.iter_batch(shuffle=True):
                 step, batch_loss = model.run_step(sess, True, batch)
                 loss.append(batch_loss)
@@ -188,7 +188,7 @@ def train():
             best = evaluate(sess, model, "dev", dev_manager, id_to_tag, logger)
             if best:
                 save_model(sess, model, FLAGS.ckpt_path, logger)
-            evaluate(sess, model, "test", test_manager, id_to_tag, logger)
+            # evaluate(sess, model, "test", test_manager, id_to_tag, logger)
 
 
 def evaluate_line():

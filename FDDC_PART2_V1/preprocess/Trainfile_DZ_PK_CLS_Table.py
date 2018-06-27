@@ -18,7 +18,7 @@ reg_duixiang = '(' \
 pattern_duixiang = re.compile(reg_duixiang)
 
 
-def searchTable3():
+def searchTable3(sample=50):
     dz_train = open('dz_pk_cls_table.train', 'a+')
     dz_dev = open('dz_pk_cls_table.dev', 'a+')
 
@@ -64,7 +64,11 @@ def searchTable3():
                             valuecell = topcell + leftcell + valuecell
 
                         toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
-                        makefile.write(toline)
+                        if label != '__label__nothing ':
+                            for i in range(sample):  # 正负样本强行拉到1：1
+                                makefile.write(toline)
+                        else:
+                            makefile.write(toline)
 
         for dz in dzs:
             dz.desc()

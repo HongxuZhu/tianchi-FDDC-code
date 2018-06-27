@@ -38,11 +38,11 @@ def train(t_data, v_data, model_path):
 
 if __name__ == "__main__":
     pass
-    # model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/cooking.ftz'
-    # train_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_pk_cls.train'
-    # valid_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_pk_cls.dev'
+    # model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_pk_cls_table.ftz'
+    # train_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_pk_cls_table.train'
+    # valid_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_pk_cls_table.dev'
     # train(train_data, valid_data, model_path)
-
+    #
     # trained = getModel(model_path)
     # print(predict(trained, '发行对象名称3、中航鑫港担保有限公司'))
     # print(predict(trained, '发行对象名称5、湖南湘投金天科技集团有限责任公司'))

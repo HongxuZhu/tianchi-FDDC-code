@@ -22,7 +22,7 @@ def getModel(path):
 def predict(model, text):
     text = ' '.join(ltp_tokenize(text))
     pre = model.predict(text)
-    return pre[0][0]
+    return pre[0][0], pre[1][0]
 
 
 def train(t_data, v_data, model_path):

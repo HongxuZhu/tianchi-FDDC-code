@@ -19,8 +19,8 @@ pattern_duixiang = re.compile(reg_duixiang)
 
 
 def searchTable3():
-    dz_train = open('dz_pk_cls.train', 'a+')
-    dz_dev = open('dz_pk_cls.dev', 'a+')
+    dz_train = open('dz_pk_cls_table.train', 'a+')
+    dz_dev = open('dz_pk_cls_table.dev', 'a+')
 
     dingzengs = getDingZengUnion(dz_trainpath)
     for id in dingzengs.keys():
@@ -48,48 +48,23 @@ def searchTable3():
                         topcell = cut[0][col]
                         leftcell = cut[row][0]
 
+                        label = '__label__nothing '
+                        for dz in dzs:
+                            if hasPK(valuecell, dz.duixiang, 'DX', dz):
+                                label = '__label__dzpk '
+                                break
+
                         if row == 0 and col == 0:
-                            # if matchDuixiang(valuecell):
-                            label = '__label__nothing '
-                            for dz in dzs:
-                                if hasPK(valuecell, dz.duixiang, 'DX', dz):
-                                    label = '__label__dzpk '
-                                    break
-                            toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
-                            makefile.write(toline)
+                            pass
                         elif row == 0 and col != 0:
-                            # if matchDuixiang(leftcell):
-                            label = '__label__nothing '
-                            for dz in dzs:
-                                if hasPK(valuecell, dz.duixiang, 'DX', dz):
-                                    label = '__label__dzpk '
-                                    break
-
                             valuecell = leftcell + valuecell
-                            toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
-                            makefile.write(toline)
                         elif row != 0 and col == 0:
-                            # if matchDuixiang(topcell):
-                            label = '__label__nothing '
-                            for dz in dzs:
-                                if hasPK(valuecell, dz.duixiang, 'DX', dz):
-                                    label = '__label__dzpk '
-                                    break
-
                             valuecell = topcell + valuecell
-                            toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
-                            makefile.write(toline)
                         else:
-                            # if matchDuixiang(topcell) or matchDuixiang(leftcell):  # 定位到对象列
-                            label = '__label__nothing '
-                            for dz in dzs:
-                                if hasPK(valuecell, dz.duixiang, 'DX', dz):
-                                    label = '__label__dzpk '
-                                    break
-
                             valuecell = topcell + leftcell + valuecell
-                            toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
-                            makefile.write(toline)
+
+                        toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
+                        makefile.write(toline)
 
         for dz in dzs:
             dz.desc()

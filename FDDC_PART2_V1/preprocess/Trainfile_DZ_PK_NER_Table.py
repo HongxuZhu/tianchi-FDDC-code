@@ -18,7 +18,7 @@ reg_duixiang = '(' \
 pattern_duixiang = re.compile(reg_duixiang)
 
 dataroot = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/NER_IDCNN_CRF/data/'
-model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/cooking.ftz'
+model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_pk_cls_table.ftz'
 dz_pk_cls_table_model = getModel(model_path)
 
 

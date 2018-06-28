@@ -37,9 +37,9 @@ flags.DEFINE_integer("max_epoch", 50, "maximum training epochs")
 flags.DEFINE_integer("steps_check", 100, "steps per checkpoint")
 
 flags.DEFINE_string("ckpt_path", "ckpt/dingzeng/table_pk", "Path to save model")
-flags.DEFINE_string("log_file", "ckpt/dingzeng/table_pk/train.log", "File for log")
-flags.DEFINE_string("map_file", "ckpt/dingzeng/table_pk/maps.pkl", "file for maps")
-flags.DEFINE_string("config_file", "ckpt/dingzeng/table_pk/config_file", "File for config")
+flags.DEFINE_string("map_file", "ckpt/dingzeng/table_pk_maps.pkl", "file for maps")
+flags.DEFINE_string("config_file", "ckpt/dingzeng/table_pk_config_file", "File for config")
+flags.DEFINE_string("log_file", "table_pk_train.log", "File for log")
 
 flags.DEFINE_string("summary_path", "summary", "Path to store summaries")
 flags.DEFINE_string("vocab_file", "vocab.json", "File for vocab")

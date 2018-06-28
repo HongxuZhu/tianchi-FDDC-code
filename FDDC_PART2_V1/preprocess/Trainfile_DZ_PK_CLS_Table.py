@@ -48,27 +48,28 @@ def searchTable3(sample=1):
                         topcell = cut[0][col]
                         leftcell = cut[row][0]
 
-                        label = '__label__nothing '
-                        for dz in dzs:
-                            if hasPK(valuecell, dz.duixiang, 'DX', dz):
-                                label = '__label__dzpk '
-                                break
+                        if matchDuixiang(topcell) or matchDuixiang(leftcell):
+                            label = '__label__nothing '
+                            for dz in dzs:
+                                if hasPK(valuecell, dz.duixiang, 'DX', dz):
+                                    label = '__label__dzpk '
+                                    break
 
-                        if row == 0 and col == 0:
-                            pass
-                        elif row == 0 and col != 0:
-                            valuecell = leftcell + valuecell
-                        elif row != 0 and col == 0:
-                            valuecell = topcell + valuecell
-                        else:
-                            valuecell = topcell + leftcell + valuecell
+                            if row == 0 and col == 0:
+                                pass
+                            elif row == 0 and col != 0:
+                                valuecell = leftcell + valuecell
+                            elif row != 0 and col == 0:
+                                valuecell = topcell + valuecell
+                            else:
+                                valuecell = topcell + leftcell + valuecell
 
-                        toline = label + ' '.join(jieba_tokenize(valuecell)) + '\n'
-                        if label != '__label__nothing ':
-                            for i in range(sample):  # 干涉正负样本比例
+                            toline = label + ' '.join(jieba_tokenize(valuecell)) + '\n'
+                            if label != '__label__nothing ':
+                                for i in range(sample):  # 干涉正负样本比例
+                                    makefile.write(toline)
+                            else:
                                 makefile.write(toline)
-                        else:
-                            makefile.write(toline)
 
         for dz in dzs:
             dz.desc()

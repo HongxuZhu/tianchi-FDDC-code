@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 
 from FDDC_PART2.preprocessing.QANetTrainFile import getDingZengUnion
-from FDDC_PART2_V1.nlp.tokenize.cws import ltp_tokenize
+from FDDC_PART2_V1.nlp.tokenize.cws import jieba_tokenize
 from FDDC_PART2_V1.preprocess.tableHandler import table2array
 
 # 公告id,增发对象,发行方式,增发数量,增发金额,锁定期,认购方式
@@ -18,7 +18,7 @@ reg_duixiang = '(' \
 pattern_duixiang = re.compile(reg_duixiang)
 
 
-def searchTable3(sample=50):
+def searchTable3(sample=1):
     dz_train = open('dz_pk_cls_table.train', 'a+')
     dz_dev = open('dz_pk_cls_table.dev', 'a+')
 
@@ -63,9 +63,9 @@ def searchTable3(sample=50):
                         else:
                             valuecell = topcell + leftcell + valuecell
 
-                        toline = label + ' '.join(ltp_tokenize(valuecell)) + '\n'
+                        toline = label + ' '.join(jieba_tokenize(valuecell)) + '\n'
                         if label != '__label__nothing ':
-                            for i in range(sample):  # 正负样本强行拉到1：1
+                            for i in range(sample):  # 干涉正负样本比例
                                 makefile.write(toline)
                         else:
                             makefile.write(toline)
@@ -93,4 +93,4 @@ def matchDuixiang(cell):
 
 
 # catTable()
-searchTable3()
+searchTable3(sample=1)

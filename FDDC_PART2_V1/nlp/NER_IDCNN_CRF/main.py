@@ -27,7 +27,7 @@ flags.DEFINE_string("tag_schema", "iobes", "tagging schema iobes or iob")
 # configurations for training
 flags.DEFINE_float("clip", 5, "Gradient clip")
 flags.DEFINE_float("dropout", 0.5, "Dropout rate")
-flags.DEFINE_integer("batch_size", 100, "batch size")
+flags.DEFINE_integer("batch_size", 300, "batch size")
 flags.DEFINE_float("lr", 0.001, "Initial learning rate")
 flags.DEFINE_string("optimizer", "adam", "Optimizer for training")
 flags.DEFINE_boolean("pre_emb", True, "Wither use pre-trained embedding")
@@ -151,8 +151,8 @@ def train():
         len(train_data), len(dev_data), len(test_data)))
 
     train_manager = BatchManager(train_data, FLAGS.batch_size)
-    dev_manager = BatchManager(dev_data, 100)
-    test_manager = BatchManager(test_data, 100)
+    dev_manager = BatchManager(dev_data, FLAGS.batch_size)
+    test_manager = BatchManager(test_data, FLAGS.batch_size)
     # make path for store log and model if not exist
     make_path(FLAGS)
     if os.path.isfile(FLAGS.config_file):

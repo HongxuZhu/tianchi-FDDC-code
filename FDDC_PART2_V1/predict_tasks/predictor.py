@@ -2,6 +2,8 @@
 
 import os
 import pickle
+import re
+from decimal import Decimal
 
 import tensorflow as tf
 from bs4 import BeautifulSoup
@@ -26,7 +28,7 @@ flags.DEFINE_string("tag_schema", "iobes", "tagging schema iobes or iob")
 # configurations for training
 flags.DEFINE_float("clip", 5, "Gradient clip")
 flags.DEFINE_float("dropout", 0.5, "Dropout rate")
-flags.DEFINE_integer("batch_size", 100, "batch size")
+flags.DEFINE_integer("batch_size", 300, "batch size")
 flags.DEFINE_float("lr", 0.001, "Initial learning rate")
 flags.DEFINE_string("optimizer", "adam", "Optimizer for training")
 flags.DEFINE_boolean("pre_emb", True, "Wither use pre-trained embedding")
@@ -35,20 +37,16 @@ flags.DEFINE_boolean("lower", True, "Wither lower case")
 flags.DEFINE_integer("max_epoch", 50, "maximum training epochs")
 flags.DEFINE_integer("steps_check", 100, "steps per checkpoint")
 
-flags.DEFINE_string("ckpt_path", "ckpt/dingzeng/table_pk", "Path to save model")
-flags.DEFINE_string("log_file", "ckpt/dingzeng/table_pk/train.log", "File for log")
-flags.DEFINE_string("map_file", "ckpt/dingzeng/table_pk/maps.pkl", "file for maps")
-flags.DEFINE_string("config_file", "ckpt/dingzeng/table_pk/config_file", "File for config")
+flags.DEFINE_string("ckpt_path", "ckpt/dingzeng/table_att", "Path to save model")
+flags.DEFINE_string("map_file", "ckpt/dingzeng/table_att_maps.pkl", "file for maps")
+flags.DEFINE_string("config_file", "ckpt/dingzeng/table_att_config_file", "File for config")
+flags.DEFINE_string("log_file", "table_att_train.log", "File for log")
 
 flags.DEFINE_string("summary_path", "summary", "Path to store summaries")
 flags.DEFINE_string("vocab_file", "vocab.json", "File for vocab")
 flags.DEFINE_string("script", "conlleval", "evaluation script")
 flags.DEFINE_string("result_path", "result", "Path for results")
 flags.DEFINE_string("emb_file", os.path.join("data", "sgns.merge.char"), "Path for pre_trained embedding")
-flags.DEFINE_string("train_file", os.path.join("data", "dz_pk_table.train"), "Path for train data")
-flags.DEFINE_string("dev_file", os.path.join("data", "dz_pk_table.dev"), "Path for dev data")
-flags.DEFINE_string("test_file", os.path.join("data", "test.test"), "Path for test data")
-
 flags.DEFINE_string("model_type", "idcnn", "Model type, can be idcnn or bilstm")
 # flags.DEFINE_string("model_type", "bilstm", "Model type, can be idcnn or bilstm")
 
@@ -65,15 +63,38 @@ os.chdir('/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/N
 dz_trainpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/dingzeng.train'
 dz_htmlpath = '/home/utopia/corpus/FDDC_part2_data/round1_train_20180518/定增/html/'
 
-model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_pk_cls_table.ftz'
+model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_att_cls_table.ftz'
 dz_pk_cls_table_model = getModel(model_path)
+
+reg_duixiang = '(' \
+               '(关联|担保|发行|法定代表|获配|配售|认购|申购|投资|询价|报价|合伙|交易)' \
+               '(对象|对方|方|人|者|机构|主体)' \
+               '|股东)' \
+               '(名称|全称|姓名|名册)?'  # $
+pattern_duixiang = re.compile(reg_duixiang)
+
+reg_isnum = '^\d+(\.\d+)?$'
+pattern_isnum = re.compile(reg_isnum)
+
+
+def clsDuixiang(cell, threshold=0.00):
+    label, score = predict(dz_pk_cls_table_model, cell)
+    if label == '__label__nothing' and score >= threshold:
+        return False
+    return True
 
 
 def matchDuixiang(cell):
-    label = predict(dz_pk_cls_table_model, cell)
-    if label == '__label__dzpk':
+    if pattern_duixiang.search(cell) is not None:
         return True
     return False
+
+
+def p_r(preset, truthset):
+    t = len(preset.intersection(truthset))
+    total_p = len(preset)
+    total_r = len(truthset)
+    return t, total_p, total_r
 
 
 def evaluate():
@@ -89,6 +110,9 @@ def evaluate():
         model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)
 
         dingzengs = getDingZengUnion(dz_trainpath)
+        TDX = T_PDX = T_RDX = 0
+        TSL = T_PSL = T_RSL = 0
+        TJE = T_PJE = T_RJE = 0
         for id in dingzengs.keys():
             dzs = dingzengs[id]
             htmlpath = dz_htmlpath + id + '.html'
@@ -96,6 +120,9 @@ def evaluate():
             rank = 6
             mod = int(id) % rank
             if mod == 0:
+                pre_dxs = set()
+                pre_sls = set()
+                pre_jes = set()
                 soup = BeautifulSoup(open(htmlpath), 'lxml')
                 tables = soup.find_all('table')
                 for table in tables:  # 遍历所有table
@@ -119,11 +146,57 @@ def evaluate():
                                 else:
                                     valuecell = topcell + leftcell + valuecell
 
-                                if matchDuixiang(valuecell):
+                                if clsDuixiang(valuecell):
                                     result = model.evaluate_line(sess, input_from_line(valuecell, char_to_id),
                                                                  id_to_tag)
                                     entities = result.get('entities')
-                                    print(entities)
+                                    for ent in entities:
+                                        type = ent['type']
+                                        word = ent['word']
+                                        if type == 'DX':
+                                            pre_dxs.add(word)
+                                        elif type == 'SL_unit10k':
+                                            if pattern_isnum.match(word):
+                                                pre_sls.add(str((Decimal(word) * 10000)))
+                                        elif type == 'SL_unit1':
+                                            pre_sls.add(word)
+                                        elif type == 'JE_unit10k':
+                                            if pattern_isnum.match(word):
+                                                pre_jes.add(str((Decimal(word) * 10000)))
+                                        elif type == 'JE_unit1':
+                                            pre_jes.add(word)
+                                    # print(entities)
+
+                truthdxs = set([dz.duixiang for dz in dzs if dz.duixiang != 'fddcUndefined'])
+                truthsls = set([dz.shuliang for dz in dzs if dz.shuliang != 'fddcUndefined'])
+                truthjes = set([dz.jine for dz in dzs if dz.jine != 'fddcUndefined'])
+                tdx, total_pdx, total_rdx = p_r(pre_dxs, truthdxs)
+                tsl, total_psl, total_rsl = p_r(pre_sls, truthsls)
+                tje, total_pje, total_rje = p_r(pre_jes, truthjes)
+
+                TDX += tdx
+                T_PDX += total_pdx
+                T_RDX += total_rdx
+
+                TSL += tsl
+                T_PSL += total_psl
+                T_RSL += total_rsl
+
+                TJE += tje
+                T_PJE += total_pje
+                T_RJE += total_rje
+
+                print('TDX={},T_PDX={},T_RDX={}'.format(TDX, T_PDX, T_RDX))
+                print('TSL={},T_PSL={},T_RSL={}'.format(TSL, T_PSL, T_RSL))
+                print('TJE={},T_PJE={},T_RJE={}'.format(TJE, T_PJE, T_RJE))
+
+                print(truthdxs)
+                print(pre_dxs)
+                print(truthsls)
+                print(pre_sls)
+                print(truthjes)
+                print(pre_jes)
+                print('---------------------------------------------------')
 
 
 def main(_):

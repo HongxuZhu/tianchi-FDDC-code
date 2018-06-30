@@ -1,11 +1,13 @@
+import os
 import re
 from decimal import Decimal
+
 from bs4 import BeautifulSoup
 
 from FDDC_PART2.preprocessing.QANetTrainFile import getDingZengUnion
 from FDDC_PART2_V1.nlp.classification.textCls import getModel, predict
-from FDDC_PART2_V1.preprocess.tableHandler import table2array
 from FDDC_PART2_V1.preprocess.Trainfile_DZ_ATT_CLS_Table import hasAtt
+from FDDC_PART2_V1.preprocess.tableHandler import table2array
 from FDDC_PART2_V1.rules.dingzengPackage import table_tag_byrow
 
 # 公告id,增发对象,发行方式,增发数量,增发金额,锁定期,认购方式
@@ -23,9 +25,6 @@ dataroot = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp
 model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_pk_cls_table.ftz'
 dz_pk_cls_table_model = getModel(model_path)
 
-submit_path_ht = 'submit_sample/hetong.csv'
-submit_path_file = open(submit_path_ht, 'a+', encoding='gbk')
-submit_path_file.write('公告id,甲方,乙方,项目名称,合同名称,合同金额上限,合同金额下限,联合体成员\n')
 
 def searchTable3():
     dz_train = open(dataroot + 'dz_att_table.train', 'a+')
@@ -220,21 +219,58 @@ def showTable():
             print('\n')
 
 
-def submit_dz(ht, submit_path_file):
-    pid = ht[0]
-    near_jf = ht[1]
-    yfword = ht[2]
-    near_xm = ht[3]
-    near_ht = ht[4]
-    near_au = ht[5]
-    near_ad = ht[6]
-    near_lh = ht[7]
-    print('pid={},JF={},YF={},XM={},HT={},AU={},AD={},LH={}'
-          .format(pid, near_jf, yfword, near_xm, near_ht, near_au, near_ad, near_lh))
+def writeTable():
+    submit_path_ht = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/submit_sample/dingzeng.txt'
+    submit_path_file = open(submit_path_ht, 'a+', encoding='gbk')
+    submit_path_file.write('公告id\t增发对象\t增发数量\t增发金额\t锁定期\t认购方式\n')
+    rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/定增/html/'
+    filelist = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
+    for i in range(0, len(filelist)):
+        id = filelist[i]
+        htmlpath = os.path.join(rootdir, id)
+        if os.path.isfile(htmlpath):
+            soup = BeautifulSoup(open(htmlpath), 'lxml')
+            tables = list(soup.find_all('table'))
+            dz_tmp_list_dict = {}
+            for t1 in range(len(tables)):
+                table = tables[t1]
+                cuts = table2array(table)
+                for t2 in range(len(cuts)):
+                    cut = cuts[t2]
+                    dx_weight, effective, dz_tmp_list, tag = table_tag_byrow(id, cut)
+                    if dx_weight > 0 and effective > 0:
+                        dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag)
 
-    line = ','.join(ht) + '\n'
+            paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
+
+            if len(paixu) > 0:
+                p = paixu[0]
+                key = p[0]
+                val = p[1]
+                effective = val[1]
+                dz_tmp_list = val[2]
+                tag = val[3]
+                for tmp in dz_tmp_list:
+                    tmp.desc()
+                    submit_dz(tmp, submit_path_file)
+                print('tag=( {} ),effective=( {} )'.format(tag, str(effective)))
+            print(
+                '以上结果为预测------------------------------------------------------------------------------------------------')
+            print('\n')
+
+
+def submit_dz(tmp, submit_path_file):
+    dz = []
+    dz.append(tmp.id)
+    dz.append(tmp.duixiang)
+    dz.append(tmp.shuliang if tmp.shuliang != 'fddcUndefined' else '')
+    dz.append(tmp.jine if tmp.jine != 'fddcUndefined' else '')
+    dz.append(tmp.suoding if tmp.suoding != 'fddcUndefined' else '12')
+    dz.append(tmp.rengou if tmp.rengou != 'fddcUndefined' else '现金')
+
+    line = '\t'.join(dz) + '\n'
     submit_path_file.write(line)
 
 
-showTable()
+writeTable()
 # searchTable3()

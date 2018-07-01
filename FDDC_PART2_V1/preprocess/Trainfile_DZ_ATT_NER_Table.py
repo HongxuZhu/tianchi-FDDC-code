@@ -273,6 +273,6 @@ def submit_dz(tmp, submit_path_file):
     submit_path_file.write(line)
 
 
-showTable()
-# writeTable()
+# showTable()
+writeTable()
 # searchTable3()

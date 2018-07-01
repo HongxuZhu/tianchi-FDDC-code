@@ -200,7 +200,7 @@ def showTable():
 
         if len(dzs) != 1 and (len(paixu) == 0 or len(dzs) != len(paixu[0][1][2])):
             for dz in dzs:
-                print('HTMLID= {} |对象= {} |数量= {} |金额= {} |锁定= {} |认购= {} '
+                print('HTMLID= {} |DX= {} |数量= {} |金额= {} |锁定= {} |认购= {} '
                       .format(dz.id, dz.duixiang, dz.shuliang, dz.jine, dz.suoding, dz.rengou))
             print(
                 '以上结果为真实------------------------------------------------------------------------------------------------')
@@ -208,12 +208,13 @@ def showTable():
                 p = paixu[0]
                 key = p[0]
                 val = p[1]
+                dx_weight = val[0]
                 effective = val[1]
                 dz_tmp_list = val[2]
                 tag = val[3]
                 for tmp in dz_tmp_list:
                     tmp.desc()
-                print('tag=( {} ),effective=( {} )'.format(tag, str(effective)))
+                print('tag=( {} ),dx_weight=( {} ),effective=( {} )'.format(tag, dx_weight, str(effective)))
             print(
                 '以上结果为预测------------------------------------------------------------------------------------------------')
             print('\n')
@@ -221,7 +222,7 @@ def showTable():
 
 def writeTable():
     submit_path_ht = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/submit_sample/dingzeng.txt'
-    submit_path_file = open(submit_path_ht, 'a+', encoding='gbk')
+    submit_path_file = open(submit_path_ht, 'a+')
     submit_path_file.write('公告id\t增发对象\t增发数量\t增发金额\t锁定期\t认购方式\n')
     rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/定增/html/'
     filelist = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
@@ -272,5 +273,6 @@ def submit_dz(tmp, submit_path_file):
     submit_path_file.write(line)
 
 
-writeTable()
+showTable()
+# writeTable()
 # searchTable3()

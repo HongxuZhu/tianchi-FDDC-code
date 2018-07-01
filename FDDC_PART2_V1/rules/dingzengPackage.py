@@ -3,12 +3,12 @@ from decimal import Decimal
 
 # 前，中，后
 # reg_duixiang1 = '(报价|询价|承诺|持有|担保|发行|股东|关联|合伙|获配|交易|配售|配套|认购|申购|投资|委托|邀请|法定代表)' \
-reg_duixiang0 = '(发行|获配|交易|配售|配套|认购)' \
+reg_duixiang0 = '(发行|获配|交易|配售|配套|认购|投资)' \
                 '(机构|者|方|人|对象|对方|对手|单位|主体|产品)' \
                 '(名称|全称|简称|构成|名册|姓名)?[：:]?$'
 pattern_duixiang0 = re.compile(reg_duixiang0)
 
-reg_duixiang1 = '(报价|询价|承诺|持有|关联|合伙|投资|委托|邀请)' \
+reg_duixiang1 = '(报价|询价|承诺|持有|关联|合伙|委托|邀请)' \
                 '(机构|者|方|人|对象|对方|对手|单位|主体|产品)' \
                 '(名称|全称|简称|构成|名册|姓名)?[：:]?$'
 pattern_duixiang1 = re.compile(reg_duixiang1)
@@ -43,7 +43,7 @@ pattern_suoding = re.compile(reg_suoding)
 reg_rengou = '^(((认购|出资|结算|分配|支付|对价)(方式|形式))|(现金|认购))$'
 pattern_rengou = re.compile(reg_rengou)
 
-reg_isnum = '^\d+(\.\d+)?$'
+reg_isnum = '\d+(\.\d+)?'
 pattern_isnum = re.compile(reg_isnum)
 
 
@@ -52,8 +52,8 @@ def reg_dx_table(text):
     basescore = 0
     if text.find('对象') != -1:
         basescore += 0.5
-    if pattern_duixiang_neg.search(text):
-        basescore -= 0.5
+    if pattern_duixiang_neg.search(text) is not None:
+        basescore -= 1
 
     if search0 is not None:
         return 3 + basescore
@@ -127,7 +127,7 @@ class dz_tmp():
         self.rengou = 'fddcUndefined'
 
     def desc(self):
-        print('HTMLID= {} |对象= {} |数量= {} |金额= {} |锁定= {} |认购= {} '
+        print('HTMLID= {} |DX= {} |数量= {} |金额= {} |锁定= {} |认购= {} '
               .format(self.id, self.duixiang, self.shuliang, self.jine, self.suoding, self.rengou))
 
 
@@ -145,32 +145,35 @@ def orgdz_byrow(id, table, startrow, rows, cols):
                     tmp.countActual += 1
                 continue
             if reg_sl_table(tag) and numflag is not None:
-                if tmp.shuliang == 'fddcUndefined':
-                    if tag.find('万') != -1:
-                        tmp.shuliang = str((Decimal(cell) * 10000))
-                    else:
-                        tmp.shuliang = cell
-                    tmp.countActual += 1
+                # if tmp.shuliang == 'fddcUndefined':
+                num = numflag.group()
+                if tag.find('万') != -1:
+                    tmp.shuliang = str((Decimal(num) * 10000))
+                else:
+                    tmp.shuliang = num
+                tmp.countActual += 1
                 continue
             if reg_je_table(tag) and numflag is not None:
-                if tmp.jine == 'fddcUndefined':
-                    if tag.find('万') != -1:
-                        tmp.jine = str((Decimal(cell) * 10000))
-                    else:
-                        tmp.jine = cell
-                    tmp.countActual += 1
-                    if float(tmp.jine) == 0:  # 明确0元剔除
-                        break
+                # if tmp.jine == 'fddcUndefined':
+                num = numflag.group()
+                if tag.find('万') != -1:
+                    tmp.jine = str((Decimal(num) * 10000))
+                else:
+                    tmp.jine = num
+                tmp.countActual += 1
+                if float(tmp.jine) == 0:  # 明确0元剔除
+                    break
                 continue
             if reg_sd_table(tag) and numflag is not None:
-                if tmp.suoding == 'fddcUndefined':
-                    tmp.suoding = cell
-                    tmp.countActual += 1
+                # if tmp.suoding == 'fddcUndefined':
+                num = numflag.group()
+                tmp.suoding = num
+                tmp.countActual += 1
                 continue
             if reg_rg_table(tag):
-                if tmp.rengou == 'fddcUndefined':
-                    tmp.rengou = cell
-                    tmp.countActual += 1
+                # if tmp.rengou == 'fddcUndefined':
+                tmp.rengou = cell
+                tmp.countActual += 1
                 continue
         if tmp.duixiang != 'fddcUndefined' and len(tmp.duixiang) > 1 and tmp.countActual > 1:
             dz_tmp_list.append(tmp)

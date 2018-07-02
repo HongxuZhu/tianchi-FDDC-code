@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 
 from fastText import train_supervised
 from fastText import load_model
-from FDDC_PART2_V1.nlp.tokenize.cws import ltp_tokenize
+from FDDC_PART2_V1.nlp.tokenize.cws import jieba_tokenize
 
 
 def print_results(N, p, r):
     print("N\t" + str(N))
-    print("P@{}\t{:.3f}".format(1, p))
-    print("R@{}\t{:.3f}".format(1, r))
+    print("P@{}\t{:.6f}".format(1, p))
+    print("R@{}\t{:.6f}".format(1, r))
 
 
 def getModel(path):
@@ -20,15 +20,15 @@ def getModel(path):
 
 
 def predict(model, text):
-    text = ' '.join(ltp_tokenize(text))
+    text = ' '.join(jieba_tokenize(text))
     pre = model.predict(text)
     return pre[0][0], pre[1][0]
 
 
 def train(t_data, v_data, model_path):
     model = train_supervised(
-        input=t_data, epoch=25, lr=1.0, wordNgrams=3, verbose=2, minCount=1,
-        loss="softmax"
+        input=t_data, epoch=25, lr=1.0, wordNgrams=10, verbose=2, minCount=1,
+        loss="hs", dim=300, pretrainedVectors="/home/utopia/corpus/cc.zh.300.vec"
     )
     print_results(*model.test(v_data))
     model.quantize(input=t_data, qnorm=True, retrain=True, cutoff=100000)
@@ -38,10 +38,10 @@ def train(t_data, v_data, model_path):
 
 if __name__ == "__main__":
     pass
-    # model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_pk_cls_table.ftz'
-    # train_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_pk_cls_table.train'
-    # valid_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_pk_cls_table.dev'
-    # train(train_data, valid_data, model_path)
+    model_path = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/classification/dz_att_cls_table.ftz'
+    train_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_att_cls_table.train'
+    valid_data = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/preprocess/dz_att_cls_table.dev'
+    train(train_data, valid_data, model_path)
     #
     # trained = getModel(model_path)
     # print(predict(trained, '发行对象名称3、中航鑫港担保有限公司'))

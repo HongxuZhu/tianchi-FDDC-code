@@ -23,6 +23,11 @@ pattern_duixiang_neg = re.compile(reg_duixiang_neg)
 # duixiangs = ['标的资产', '公司', '股东', '机构', '一致行动人', '乙方', '员工持股计划']
 duixiangs = ['标的资产', '公司', '机构', '一致行动人', '乙方', '员工持股计划']
 
+reg_not_dx = '合计|总计|汇总|小计|其中|其他|其它'
+pattern_not_dx = re.compile(reg_not_dx)
+
+# -------------------------------以上对对象专用-------------------------------
+
 # 动词，副词，名词，量词，单位
 reg_shuliang1 = '(配售|获配|获售|限售|发行|发售|发股|认购|持有|持股|变动|交易|调整|申购|申报)(后|之后)?' \
                 '(股份|股本|证券|股票|A股|新股|股数)?(总数|总额|数|数量)?(\(?万?[股只]\)?)?$'
@@ -52,8 +57,12 @@ def reg_dx_table(text):
     basescore = 0
     if text.find('对象') != -1:
         basescore += 0.5
-    if pattern_duixiang_neg.search(text) is not None:
+    if text.find('项目') != -1:
         basescore -= 1
+    if text.find('股东') != -1:
+        basescore -= 0.9
+    # if pattern_duixiang_neg.search(text) is not None:
+    #     basescore -= 0.5
 
     if search0 is not None:
         return 3 + basescore
@@ -140,12 +149,11 @@ def orgdz_byrow(id, table, startrow, rows, cols):
             cell = table[row][col]
             numflag = pattern_isnum.search(cell)
             if reg_dx_table(tag):
-                if tmp.duixiang == 'fddcUndefined' and cell not in ['合计', '总计', '汇总', '小计']:
+                if tmp.duixiang == 'fddcUndefined' and pattern_not_dx.search(cell) is None:
                     tmp.duixiang = cell
                     tmp.countActual += 1
                 continue
             if reg_sl_table(tag) and numflag is not None:
-                # if tmp.shuliang == 'fddcUndefined':
                 num = numflag.group()
                 if tag.find('万') != -1:
                     tmp.shuliang = str((Decimal(num) * 10000))
@@ -154,29 +162,31 @@ def orgdz_byrow(id, table, startrow, rows, cols):
                 tmp.countActual += 1
                 continue
             if reg_je_table(tag) and numflag is not None:
-                # if tmp.jine == 'fddcUndefined':
                 num = numflag.group()
                 if tag.find('万') != -1:
                     tmp.jine = str((Decimal(num) * 10000))
                 else:
                     tmp.jine = num
                 tmp.countActual += 1
-                if float(tmp.jine) == 0:  # 明确0元剔除
-                    break
                 continue
             if reg_sd_table(tag) and numflag is not None:
-                # if tmp.suoding == 'fddcUndefined':
                 num = numflag.group()
                 tmp.suoding = num
                 tmp.countActual += 1
                 continue
             if reg_rg_table(tag):
-                # if tmp.rengou == 'fddcUndefined':
                 tmp.rengou = cell
                 tmp.countActual += 1
                 continue
         if tmp.duixiang != 'fddcUndefined' and len(tmp.duixiang) > 1 and tmp.countActual > 1:
-            dz_tmp_list.append(tmp)
+            # select min(`增发数量`), min(`增发金额`) from dingzeng where `增发数量` > 0 and `增发金额` > 0;
+            # 17267,113616.860000
+            if (tmp.jine != 'fddcUndefined' and float(tmp.jine) < 100000) \
+                    or (tmp.shuliang != 'fddcUndefined' and float(tmp.shuliang) < 10000):  # 由训练数据统计得来
+                pass
+            else:
+                # if len(dz_tmp_list) < 11:
+                dz_tmp_list.append(tmp)
 
     effective = 0
     for tmp in dz_tmp_list:
@@ -184,36 +194,6 @@ def orgdz_byrow(id, table, startrow, rows, cols):
 
     return effective, dz_tmp_list
 
-
-# def table_tag_byrow(id, table):
-#     rows = len(table)
-#     cols = len(table[0])
-#     tagcount_dict = {}
-#     for row in range(rows):
-#         tagcount = 0
-#         for col in range(cols):
-#             cell = table[row][col]
-#             if reg_dx_table(cell):
-#                 tagcount += 1
-#                 continue
-#             if reg_sl_table(cell):
-#                 tagcount += 1
-#                 continue
-#             if reg_je_table(cell):
-#                 tagcount += 1
-#                 continue
-#             if reg_sd_table(cell):
-#                 tagcount += 1
-#                 continue
-#             if reg_rg_table(cell):
-#                 tagcount += 1
-#                 continue
-#         tagcount_dict[row] = tagcount
-#
-#     paixu = list(sorted(tagcount_dict.items(), key=lambda d: d[1], reverse=True))
-#     startrow = paixu[0][0]
-#
-#     return orgdz_byrow(id, table, startrow, rows, cols)
 
 def table_tag_byrow(id, table):
     rows = len(table)
@@ -223,11 +203,12 @@ def table_tag_byrow(id, table):
         for col in range(cols):
             cell = table[row][col]
             weight = reg_dx_table(cell)
+            rownum = rows - 1 - row
             if weight > 0:
-                tagcount_dict[row] = weight, cell
+                tagcount_dict[row] = weight, cell, rownum
                 break
 
-    paixu = list(sorted(tagcount_dict.items(), key=lambda d: d[1], reverse=True))
+    paixu = list(sorted(tagcount_dict.items(), key=lambda d: (d[1][0], d[1][2]), reverse=True))
     if len(paixu) > 0:
         startrow = paixu[0][0]
         weight = paixu[0][1][0]

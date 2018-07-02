@@ -61,16 +61,14 @@ def searchTable3(sample=1, enhance=1):
                         #         labels.add('__label__dzje')
 
                         for dz in dzs:
-                            if hasAtt(valuecell, dz.duixiang, 'DX', dz, False, None, None) \
+                            if hasAtt(valuecell, dz.duixiang, 'DX', dz, False, None, None, False) \
                                     and not hasAtt(topcell + leftcell, dz.duixiang, 'DX', dz, False, None, None, False):
                                 labels.add('__label__dzdx')
-                            if hasAtt(valuecell, dz.shuliang, 'SL', dz, True, topcell, leftcell) \
-                                    and not hasAtt(topcell + leftcell, dz.shuliang, 'SL', dz, True, topcell, leftcell,
-                                                   False):
+                            if hasAtt(valuecell, dz.shuliang, 'SL', dz, True, topcell, leftcell, False) \
+                                    and not hasAtt(topcell + leftcell, dz.shuliang, 'SL', dz, True, topcell, leftcell, False):
                                 labels.add('__label__dzsl')
-                            if hasAtt(valuecell, dz.jine, 'JE', dz, True, topcell, leftcell) \
-                                    and not hasAtt(topcell + leftcell, dz.shuliang, 'SL', dz, True, topcell, leftcell,
-                                                   False):
+                            if hasAtt(valuecell, dz.jine, 'JE', dz, True, topcell, leftcell, False) \
+                                    and not hasAtt(topcell + leftcell, dz.shuliang, 'SL', dz, True, topcell, leftcell, False):
                                 labels.add('__label__dzje')
 
                         if len(labels) == 0:
@@ -102,11 +100,11 @@ def hasAtt(line_source, val, label, dingzeng, isNum, top, left, strict):
             if top.find('万') != -1 or left.find('万') != -1:
                 val = str((Decimal(val) / 10000))
         if strict:
-            if val == line_source:
+            if val == line_source:  # 完全匹配
                 dingzeng.setStatus(label)
                 return True
         else:
-            if re.search(val, line_source, re.I) is not None:
+            if re.search(val, line_source, re.I) is not None:  # 部分匹配
                 dingzeng.setStatus(label)
                 return True
 

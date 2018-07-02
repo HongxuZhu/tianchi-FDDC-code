@@ -48,3 +48,60 @@ count(distinct `公告id`,`乙方`,`甲方`)
 from hetong where `公告id`='1665560';
 
 select * from hetong where `公告id`='15697283';
+
+select count(1)/count(distinct `公告id`) 
+from hetong;#1.1207
+select count(1)/count(distinct `公告id`),count(1),count(distinct `公告id`) 
+from dingzeng;#4.5283
+select count(1)/count(distinct `公告id`) ,
+count(distinct `公告id`)/count(distinct `公告id`,`股东全称`)
+from zengjianchi;#2.2256
+
+select 
+count(1),
+count(distinct `公告id`),
+count(distinct `增发对象`),
+count(distinct `增发数量`),
+count(distinct `增发金额`),
+count(distinct `锁定期`),
+count(distinct `认购方式`)
+ from dingzeng;
+ 
+select 
+`公告id`,count(distinct `增发对象`) c
+ from dingzeng group by `公告id` order by c desc;
+ 
+ select 
+`公告id`,count(distinct `增发金额`) c,count(distinct `增发对象`)
+ from dingzeng group by `公告id` order by c desc;
+ 
+ select * from dingzeng where `增发金额`=0 and `增发数量`=0;
+ 
+select `锁定期`,count(1) c from dingzeng group by `锁定期` order by c desc;
+select `认购方式`,count(1) c from dingzeng group by `认购方式` order by c desc;
+
+select min(`增发数量`),max(`增发数量`),min(`增发金额`),max(`增发金额`) 
+from dingzeng where `增发数量`>0 and `增发金额`>0;
+
+select min(`增发数量`),min(`增发金额`)
+from dingzeng where `增发数量`>0 and `增发金额`>0;
+
+select count(1) from dingzeng where `增发数量`=0;#844
+select count(1) from dingzeng where `增发金额`=0;#5586
+select count(1) from dingzeng where `增发金额`=0 or `增发数量`=0;#5878
+select count(1) from dingzeng where `增发金额`=0 and `增发数量`=0;#552
+
+select sum(case when `增发数量`>10000 then 1 else 0 end),
+sum(case when `增发金额`>10000 then 1 else 0 end),
+count(1)
+from dingzeng;
+
+select sum(case when `增发对象` like '%公司' then 1 else 0 end),
+sum(case when `增发对象` like '%计划' then 1 else 0 end),
+sum(case when length(`增发对象`)<10 then 1 else 0 end),
+count(1)
+from dingzeng;
+
+select min(length(`增发对象`)) from dingzeng where `增发对象` like '%公司';
+select * from dingzeng where `增发对象` like '%公司' and length(`增发对象`)=9;
+select * from dingzeng where length(`增发对象`)>9 and length(`增发对象`)<12;

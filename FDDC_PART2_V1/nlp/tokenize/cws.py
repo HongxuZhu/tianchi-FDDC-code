@@ -21,6 +21,11 @@ def jieba_tokenize(sent):
     return list(words)
 
 
+def jieba_tokenize_distinct(sent):
+    words = jieba.cut(sent)
+    return set(list(words))
+
+
 def hanlp_tokenize(sent):
     return [term.word for term in HanLP.segment(sent)]
 

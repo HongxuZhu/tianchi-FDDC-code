@@ -67,23 +67,24 @@ class Contract:
             self.countActual += 1
 
     def desc(self):
-        print('DESC html_ID= {} ,应有字段={},实有字段={},缺少{}个字段'
-              .format(self.id, self.count, self.countActual, self.count - self.countActual))
-        if self.labelDict['JF'] == 0 and self.jiafang != 'fddcUndefined':
-            print('JF lost when makefile {}'.format(self.jiafang))
-        if self.labelDict['YF'] == 0 and self.yifang != 'fddcUndefined':
-            print('YF lost when makefile {}'.format(self.yifang))
-        if self.labelDict['XM'] == 0 and self.xiangmu != 'fddcUndefined':
-            print('XM lost when makefile {}'.format(self.xiangmu))
-        if self.labelDict['HT'] == 0 and self.hetong != 'fddcUndefined':
-            print('HT lost when makefile {}'.format(self.hetong))
-        if self.labelDict['AU'] == 0 and self.amount_u != 'fddcUndefined':
-            print('AU lost when makefile {}'.format(self.amount_u))
-        if self.labelDict['AD'] == 0 and self.amount_d != 'fddcUndefined':
-            print('AD lost when makefile {}'.format(self.amount_d))
-        if self.labelDict['LH'] == 0 and self.lianhe != 'fddcUndefined':
-            print('LH lost when makefile {}'.format(self.lianhe))
-        print('----------------- over -----------------')
+        if self.count != self.countActual:
+            print('DESC html_ID= {} ,应有字段={},实有字段={},缺少{}个字段'
+                  .format(self.id, self.count, self.countActual, self.count - self.countActual))
+            if self.labelDict['JF'] == 0 and self.jiafang != 'fddcUndefined':
+                print('JF lost when makefile {}'.format(self.jiafang))
+            if self.labelDict['YF'] == 0 and self.yifang != 'fddcUndefined':
+                print('YF lost when makefile {}'.format(self.yifang))
+            if self.labelDict['XM'] == 0 and self.xiangmu != 'fddcUndefined':
+                print('XM lost when makefile {}'.format(self.xiangmu))
+            if self.labelDict['HT'] == 0 and self.hetong != 'fddcUndefined':
+                print('HT lost when makefile {}'.format(self.hetong))
+            if self.labelDict['AU'] == 0 and self.amount_u != 'fddcUndefined':
+                print('AU lost when makefile {}'.format(self.amount_u))
+            if self.labelDict['AD'] == 0 and self.amount_d != 'fddcUndefined':
+                print('AD lost when makefile {}'.format(self.amount_d))
+            if self.labelDict['LH'] == 0 and self.lianhe != 'fddcUndefined':
+                print('LH lost when makefile {}'.format(self.lianhe))
+            print('----------------- over -----------------')
 
 
 class DingZeng():

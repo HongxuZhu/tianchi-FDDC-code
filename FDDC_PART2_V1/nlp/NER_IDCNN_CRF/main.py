@@ -26,7 +26,7 @@ flags.DEFINE_string("tag_schema", "iobes", "tagging schema iobes or iob")
 # configurations for training
 flags.DEFINE_float("clip", 5, "Gradient clip")
 flags.DEFINE_float("dropout", 0.5, "Dropout rate")
-flags.DEFINE_integer("batch_size", 200, "batch size")
+flags.DEFINE_integer("batch_size", 400, "batch size")
 flags.DEFINE_float("lr", 0.001, "Initial learning rate")
 flags.DEFINE_string("optimizer", "adam", "Optimizer for training")
 flags.DEFINE_boolean("pre_emb", True, "Wither use pre-trained embedding")
@@ -35,12 +35,12 @@ flags.DEFINE_boolean("lower", True, "Wither lower case")
 flags.DEFINE_integer("max_epoch", 50, "maximum training epochs")
 flags.DEFINE_integer("steps_check", 100, "steps per checkpoint")
 
-flags.DEFINE_string("train_file", os.path.join("data", "dz_att_table.train"), "Path for train data")
-flags.DEFINE_string("dev_file", os.path.join("data", "dz_att_table.dev"), "Path for dev data")
-flags.DEFINE_string("ckpt_path", "ckpt/dingzeng/table_att", "Path to save model")
-flags.DEFINE_string("map_file", "ckpt/dingzeng/table_att_maps.pkl", "file for maps")
-flags.DEFINE_string("config_file", "ckpt/dingzeng/table_att_config_file", "File for config")
-flags.DEFINE_string("log_file", "table_att_train.log", "File for log")
+flags.DEFINE_string("train_file", os.path.join("data", "dz_all_text.train"), "Path for train data")
+flags.DEFINE_string("dev_file", os.path.join("data", "dz_all_text.dev"), "Path for dev data")
+flags.DEFINE_string("ckpt_path", "ckpt/dingzeng/text_all", "Path to save model")
+flags.DEFINE_string("map_file", "ckpt/dingzeng/text_all_maps.pkl", "file for maps")
+flags.DEFINE_string("config_file", "ckpt/dingzeng/text_all_config_file", "File for config")
+flags.DEFINE_string("log_file", "text_all_train.log", "File for log")
 
 flags.DEFINE_string("summary_path", "summary", "Path to store summaries")
 flags.DEFINE_string("vocab_file", "vocab.json", "File for vocab")
@@ -150,8 +150,8 @@ def train():
         len(train_data), len(dev_data), len(test_data)))
 
     train_manager = BatchManager(train_data, FLAGS.batch_size)
-    dev_manager = BatchManager(dev_data, FLAGS.batch_size)
-    test_manager = BatchManager(test_data, FLAGS.batch_size)
+    dev_manager = BatchManager(dev_data, 100)
+    test_manager = BatchManager(test_data, 100)
     # make path for store log and model if not exist
     make_path(FLAGS)
     if os.path.isfile(FLAGS.config_file):

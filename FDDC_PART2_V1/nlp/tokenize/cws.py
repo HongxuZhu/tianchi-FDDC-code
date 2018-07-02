@@ -56,7 +56,7 @@ def ltp_pos_v_distinct(sent):
     v_set = set()
     length = len(postags)
     for i in range(length):
-        if postags[i] == 'v':
+        if postags[i] == 'v' and len(words[i]) > 1:
             v_set.add(words[i])
 
     return v_set

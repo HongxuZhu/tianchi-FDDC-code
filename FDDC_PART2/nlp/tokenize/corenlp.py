@@ -2,8 +2,12 @@ from pyltp import Segmentor
 import re
 import spacy
 from stanfordcorenlp import StanfordCoreNLP
+from pyhanlp import *
+import jieba
 
 nlp = spacy.blank("zh")
+
+jieba.initialize()
 
 corenlp = StanfordCoreNLP(r'/home/utopia/corpus/stanford-corenlp-full-2018-02-27', lang='zh')
 
@@ -21,23 +25,33 @@ sentence = '本公司于 2014 年 5 月 21 日接到公司控股股东中国南�
 sentence = re.sub('\s+', '', sentence)
 
 
-def word_tokenize(sent):
-    doc = nlp(sent)
-    return [token.text for token in doc]
+def jieba_tokenize(sent):
+    words = jieba.cut(sent)
+    return list(words)
 
 
-print(word_tokenize(sentence))
+def hanlp_tokenize(sent):
+    return [term.word for term in HanLP.segment(sent)]
 
-print(corenlp.word_tokenize(sentence))
+
+def corenlp_tokenize(sent):
+    return corenlp.word_tokenize(sent)
+
+
+def ltp_tokenize(sent):
+    words = segmentor.segment(sent)  # 分词
+    words_list = list(words)
+    return words_list
+
 # print(corenlp.pos_tag(sentence))
 # print(corenlp.ner(sentence))
 # print(corenlp.parse(sentence))
 # print(corenlp.dependency_parse(sentence))
 
-
-words = segmentor.segment(sentence)  # 分词
-words_list = list(words)
-print(words_list)
-segmentor.release()  # 释放模型
+# print(jieba_tokenize(sentence))
+# print(hanlp_tokenize(sentence))
+# print(corenlp_tokenize(sentence))
+# print(ltp_tokenize(sentence))
+# segmentor.release()
 
 # 结论：jieba挺好

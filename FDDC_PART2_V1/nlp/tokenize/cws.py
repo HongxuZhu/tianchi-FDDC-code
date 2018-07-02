@@ -32,3 +32,9 @@ def ltp_tokenize(sent):
     words = segmentor.segment(sent)  # 分词
     words_list = list(words)
     return words_list
+
+
+def ltp_tokenize_distinct(sent):
+    words = segmentor.segment(sent)  # 分词
+    words_list = list(words)
+    return set(words_list)

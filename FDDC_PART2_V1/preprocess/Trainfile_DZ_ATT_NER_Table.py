@@ -194,9 +194,13 @@ def showTable():
                 cut = cuts[t2]
                 dx_weight, effective, dz_tmp_list, tag = table_tag_byrow(id, cut)
                 if dx_weight > 0 and effective > 0:
-                    dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag)
+                    density = float(effective / (5 * len(dz_tmp_list)))  # 有效数据密度
+                    if density > 0.2:
+                        dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag)
 
-        paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
+        # paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
+        # 按对象表头权重×密度倒排
+        paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0] * float(d[1][1] / (5 * len(d[1][2]))), reverse=True))
 
         if len(dzs) != 1 and (len(paixu) == 0 or len(dzs) != len(paixu[0][1][2])):
             for dz in dzs:
@@ -240,9 +244,13 @@ def writeTable():
                     cut = cuts[t2]
                     dx_weight, effective, dz_tmp_list, tag = table_tag_byrow(id, cut)
                     if dx_weight > 0 and effective > 0:
-                        dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag)
+                        density = float(effective / (5 * len(dz_tmp_list)))  # 有效数据密度
+                        if density > 0.2:
+                            dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag)
 
-            paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
+            # paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
+            paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0] * float(d[1][1] / (5 * len(d[1][2]))),
+                                reverse=True))
 
             if len(paixu) > 0:
                 p = paixu[0]
@@ -267,12 +275,17 @@ def submit_dz(tmp, submit_path_file):
     dz.append(tmp.shuliang if tmp.shuliang != 'fddcUndefined' else '')
     dz.append(tmp.jine if tmp.jine != 'fddcUndefined' else '')
     dz.append(tmp.suoding if tmp.suoding != 'fddcUndefined' else '12')
-    dz.append(tmp.rengou if tmp.rengou != 'fddcUndefined' else '现金')
+    dz.append('现金' if tmp.rengou != 'fddcUndefined' else '现金')
 
     line = '\t'.join(dz) + '\n'
     submit_path_file.write(line)
 
 
-# showTable()
-writeTable()
+# 用于调试表格策略
+showTable()
+
+# 用于生成提交数据
+# writeTable()
+
+# 用于发现表头规律
 # searchTable3()

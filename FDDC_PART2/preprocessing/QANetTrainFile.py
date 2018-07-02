@@ -133,6 +133,68 @@ def QandA():
     json.dump(js2, open('db2.json', 'w'), ensure_ascii=False)
 
 
+def QandA_better(keep_limit):
+    # 增发对象(pk),增发数量,增发金额,锁定期,认购方式
+    dingzengs = getDingZengUnion(dz_trainpath)
+    js1 = {'version': '1.1', 'data': []}
+    js2 = {'version': '1.1', 'data': []}
+    rank = 100
+    for id in dingzengs.keys():
+        xxx = dingzengs[id]
+        qa_standard = qas(xxx)
+        details = qa_standard['details']
+        html = levelText_withtable(dz_htmlpath_train + id + '.html')
+        paragraphs = html['paragraphs']
+
+        for paragraph in paragraphs:
+            context = paragraph['context']
+            pkqas_confirm = []
+            detailqas_confirm = []
+            for pk in details.keys():
+                pk_answers = find_answer(context, pk, False)
+                if len(pk_answers) > 0:
+                    detail_answers = []
+                    count = 0
+                    for detail in details[pk]:
+                        answer = detail['answers'][0]['text']
+                        question = detail['question']
+                        answers = []
+                        if question.find('锁定期') != -1:  # 十二个月,三十六个月
+                            continue
+                        elif question.find('数量') != -1 or question.find('金额') != -1:
+                            answers = find_answer(context, answer, True)
+                        else:
+                            answers = find_answer(context, answer, False)
+                        if len(answers) > 0:
+                            detail_answers.append({'answers': answers, 'question': question, 'id': uuid()})
+                            count += 1
+                    if count >= keep_limit:
+                        pkqas_confirm += pk_answers
+                        detailqas_confirm += detail_answers
+
+            if len(pkqas_confirm) > 0:
+                paragraph['qas'] = detailqas_confirm
+                paragraph['qas'].append({'answers': pkqas_confirm, 'question': '增发对象有哪些?', 'id': uuid()})
+
+        filters = []
+        for item in paragraphs:
+            qa_item = item.get('qas')
+            if qa_item is not None and len(qa_item) > 0:
+                filters.append(item)
+
+        if len(filters) > 0:
+            html['paragraphs'] = filters
+            mod = int(id) % rank
+            if mod < 17:
+                js1['data'].append(html)
+            else:
+                js2['data'].append(html)
+            print(json.dumps(html, ensure_ascii=False))
+
+    json.dump(js1, open('db1.json', 'w'), ensure_ascii=False)
+    json.dump(js2, open('db2.json', 'w'), ensure_ascii=False)
+
+
 def find_answer(context, answer, isNum):
     answer = answer.replace('(', '\(')
     answer = answer.replace(')', '\)')
@@ -160,14 +222,9 @@ def find_answer(context, answer, isNum):
 
 
 def qas(xxx):
-    qas = []
+    qas = {'details': {}}
     for x in xxx:
         xqas = []
-        # qa =
-        q1 = '增发对象是?'
-        a1 = x.duixiang
-        xqas.append(qa(a1, q1))
-
         if x.shuliang != 'fddcUndefined':
             q2 = x.duixiang + '的增发数量是?'
             a2 = x.shuliang
@@ -187,7 +244,7 @@ def qas(xxx):
             q5 = x.duixiang + '的认购方式是?'
             a5 = x.rengou
             xqas.append(qa(a5, q5))
-        qas.append(xqas)
+        qas['details'][x.duixiang] = xqas
     return qas
 
 
@@ -225,6 +282,5 @@ def uuid():
     hl.update(string.encode(encoding='utf-8'))
     return hl.hexdigest()
 
-
-QandA()
+# QandA_better(3)
 # print(levelText_withtable(dz_htmlpath_test + '10076'))

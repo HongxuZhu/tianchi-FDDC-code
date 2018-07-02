@@ -100,7 +100,7 @@ class DingZeng():
             self.id = 'fddcUndefined'
 
         if length > 1 and fields[1] != '':
-            self.duixiang = fields[1]
+            self.duixiang = normalizer.norm_text(fields[1])
             self.count += 1
         else:
             self.duixiang = 'fddcUndefined'
@@ -118,7 +118,7 @@ class DingZeng():
             self.jine = 'fddcUndefined'
 
         if length > 4 and fields[4] != '':
-            self.suoding = fields[4]
+            self.suoding = fields[4] + '个月'
             self.count += 1
         else:
             self.suoding = 'fddcUndefined'
@@ -135,3 +135,17 @@ class DingZeng():
         if self.labelDict[label] == 0:
             self.labelDict[label] = 1
             self.countActual += 1
+
+    def desc(self):
+        # print('DESC html_ID= {} ,应有字段={},实有字段={},缺少{}个字段'
+        #       .format(self.id, self.count, self.countActual, self.count - self.countActual))
+        if self.labelDict['DX'] == 0 and self.duixiang != 'fddcUndefined':
+            print('DESC html_ID= {} DX lost when makefile {}'.format(self.id, self.duixiang))
+        # if self.labelDict['SL'] == 0 and self.shuliang != 'fddcUndefined':
+        #     print('DESC html_ID= {} DX= {} SL lost when makefile {}'.format(self.id, self.duixiang, self.shuliang))
+        # if self.labelDict['JE'] == 0 and self.jine != 'fddcUndefined':
+        #     print('DESC html_ID= {} DX= {} JE lost when makefile {}'.format(self.id, self.duixiang, self.jine))
+        # if self.labelDict['SD'] == 0 and self.suoding != 'fddcUndefined':
+        #     print('DESC html_ID= {} DX= {} SD lost when makefile {}'.format(self.id, self.duixiang, self.suoding))
+        # if self.labelDict['RG'] == 0 and self.rengou != 'fddcUndefined':
+        #     print('DESC html_ID= {} DX= {} RG lost when makefile {}'.format(self.id, self.duixiang, self.rengou))

@@ -32,7 +32,7 @@ def getContractUnion(trainpath):
     cons = {}
     with open(trainpath, 'r') as file:
         for line in file:
-            line = line.encode('utf-8').decode('utf-8-sig')
+            # line = line.encode('utf-8').decode('utf-8-sig')
             line = line[0:len(line) - 1]
             con = tagger.getContract(line)
             conarray = cons.get(con.id)
@@ -48,7 +48,7 @@ def find_allheaders_fromhtml(trainpath, htmlpath, index):
     with open(trainpath, 'r') as file:
         id = None
         for line in file:
-            line = line.encode('utf-8').decode('utf-8-sig')
+            # line = line.encode('utf-8').decode('utf-8-sig')
             line = line[0:len(line) - 1]
             entity = line.split('\t')
             length = len(entity)

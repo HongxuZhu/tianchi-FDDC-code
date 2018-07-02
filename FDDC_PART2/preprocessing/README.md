@@ -26,7 +26,13 @@ cd /home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCN
 
 python3 /usr/local/bin/tensorboard --logdir=ckpt
 
-python3 main.py --train=True --clean=True --model_type=idcnn/bilstm
+python3 main.py --train=True --clean=True --model_type=bilstm/idcnn
+
+in pycharm:
+
+search everywhere -> configurations ->Edit configurations
+LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64
+PYTHONPATH=/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/NER_IDCNN_CRF
 
 gedit ~/.bashrc
 
@@ -39,3 +45,13 @@ echo $PYTHONPATH
 cd /home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2/expand/NER_IDCNN_CRF
 
 python3 predictor.py
+
+sudo pip3 install pdfminer.six
+
+$ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
+$ unzip v0.1.0.zip
+$ cd fastText-0.1.0
+$ sudo make
+$ git clone https://github.com/facebookresearch/fastText.git
+$ cd fastText
+$ sudo pip3 install .

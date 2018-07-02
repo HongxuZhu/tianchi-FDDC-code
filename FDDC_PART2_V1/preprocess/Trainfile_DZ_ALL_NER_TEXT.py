@@ -104,8 +104,8 @@ def maketrain(before=0):
                     isMask = True
                 if package.reg_sd_table(context) and mask_contract_field(context, dz.suoding, tag_arr, 'SD', dz, False):
                     isMask = True
-                if package.reg_rg_table(context) and mask_contract_field(context, dz.rengou, tag_arr, 'RG', dz, False):
-                    isMask = True
+                # if package.reg_rg_table(context) and mask_contract_field(context, dz.rengou, tag_arr, 'RG', dz, False):
+                #     isMask = True
             if isMask:
                 for i in range(len(context)):
                     makefile.write(context[i] + ' ' + tag_arr[i] + '\n')

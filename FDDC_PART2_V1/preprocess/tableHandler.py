@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 
 from FDDC_PART2.preprocessing.QANetTrainFile import getDingZengUnion
-from FDDC_PART2.preprocessing.normalizer import norm_text
+from FDDC_PART2.preprocessing.normalizer import norm_dz
 
 
 def table2array(table):
@@ -21,7 +21,7 @@ def table2array(table):
             if rowspan is not None:
                 rowspan_dict[(trnum, tdnum)] = int(rowspan)
 
-            text = norm_text(cell.get_text())
+            text = norm_dz(cell.get_text())
             if colspan is not None:
                 for it in range(int(colspan)):
                     # 只影响本行

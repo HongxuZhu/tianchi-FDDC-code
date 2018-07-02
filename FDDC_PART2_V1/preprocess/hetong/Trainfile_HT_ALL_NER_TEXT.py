@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import FDDC_PART2_V1.rules.dingzengPackage as package
 from FDDC_PART2.preprocessing.entity import Contract
 from FDDC_PART2.preprocessing.normalizer import norm_ht
+from FDDC_PART2_V1.nlp.tokenize.cws import ltp_pos_v_distinct
 
 # 公告id,增发对象,发行方式,增发数量,增发金额,锁定期,认购方式
 dataroot = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/nlp/NER_IDCNN_CRF/data/'
@@ -83,12 +84,12 @@ def discoverText(before=0):
                 if i >= 0:
                     beforetext += sentences[i]
             context = beforetext + sentence
-            # ywset = jieba_tokenize_distinct(context)
+            ywset = ltp_pos_v_distinct(context)
             tag_arr = ['O'] * len(sentence)
             isMask = False
             for ht in hts:
                 if mask_contract_field(sentence, ht.jiafang, tag_arr, 'JF', ht, False):
-                    # setCount(dx_dict, ywset, id)
+                    setCount(dx_dict, ywset, id)
                     isMask = True
                 if mask_contract_field(sentence, ht.yifang, tag_arr, 'YF', ht, False):
                     isMask = True
@@ -108,14 +109,11 @@ def discoverText(before=0):
                 # print('sid=' + str(sid) + ' sentence:' + sentence)
                 # print('beforetext:' + beforetext)
 
-        for ht in hts:
-            ht.desc()
-
-    # guolv = {k: v for k, v in dx_dict.items() if len(v) > 9}
-    # paixu = sorted(guolv.items(), key=lambda d: len(d[1]), reverse=True)
-    # print('--------------------------------------------------------------------------------------------------------')
-    # for px in paixu:
-    #     print(px[0] + '\t' + str(px[1]))
+    guolv = {k: len(v) for k, v in dx_dict.items() if len(v) > 9}
+    paixu = sorted(guolv.items(), key=lambda d: d[1], reverse=True)
+    print('--------------------------------------------------------------------------------------------------------')
+    for px in paixu:
+        print(px[0] + '\t' + str(px[1]))
     #
     # guolv = {k: v for k, v in sl_dict.items() if len(v) > 9}
     # paixu = sorted(guolv.items(), key=lambda d: len(d[1]), reverse=True)
@@ -169,10 +167,10 @@ def maketrain(before=0):
                 lhs = ht.lianhe.split('、')
                 for lh in lhs:
                     mask_contract_field(context, lh, tag_arr, 'LH', ht, False)
-            if isMask:
-                for i in range(len(context)):
-                    makefile.write(context[i] + ' ' + tag_arr[i] + '\n')
-                makefile.write('\n')
+            # if isMask:
+            for i in range(len(context)):
+                makefile.write(context[i] + ' ' + tag_arr[i] + '\n')
+            makefile.write('\n')
 
         for ht in hts:
             ht.desc()
@@ -249,4 +247,5 @@ def mask_contract_field(line_source, val, tag_arr, label, obj, isnum):
 
 
 # maketrain()
-showText()
+# showText()
+discoverText(before=1)

@@ -290,6 +290,6 @@ def mask_contract_field(line_source, val, tag_arr, label, obj, isnum):
     return isMask
 
 
-maketrain(before=0)
+# maketrain(before=0)
 # showText()
 # discoverText(before=1)

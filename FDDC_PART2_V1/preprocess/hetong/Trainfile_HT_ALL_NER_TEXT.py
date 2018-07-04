@@ -200,32 +200,6 @@ def setCount(ywdict, ywset, id):
             val.add(id)
 
 
-# def levelText_without_table(htmlpath):
-#     soup = BeautifulSoup(open(htmlpath), 'lxml')
-#     sents_arr = []
-#     for paragraph in soup.find_all('div', type='paragraph'):
-#         p_title = paragraph.attrs.get('title')
-#         if p_title is not None:
-#             p_title = norm_ht(p_title)
-#             if len(p_title) > 0:
-#                 sents_arr.append(p_title)
-#         for content in paragraph.find_all('div', type='content'):
-#             c_title = content.attrs.get('title')
-#             if c_title is not None:
-#                 c_title = norm_ht(c_title)
-#                 if len(c_title) > 0:
-#                     sents_arr.append(c_title)
-#             tables = content.find_all('table')
-#             # 假设训练数据中，text和table不同时存在于同一content内
-#             if len(tables) == 0:
-#                 sentences = content.get_text().split('。')
-#                 for sentence in sentences:
-#                     # 合并，英语怎么处理？
-#                     sen = norm_ht(sentence)
-#                     if len(sen) > 0:
-#                         sents_arr.append(sen + "。")
-#     return sents_arr
-
 def levelText_without_table(htmlpath):
     soup = BeautifulSoup(open(htmlpath), 'lxml')
     sents_arr = []
@@ -234,21 +208,48 @@ def levelText_without_table(htmlpath):
         if p_title is not None:
             p_title = norm_ht(p_title)
             if len(p_title) > 0:
-                sents_arr.append(p_title + "。")
-        sents_content = ''
+                sents_arr.append(p_title)
         for content in paragraph.find_all('div', type='content'):
             c_title = content.attrs.get('title')
             if c_title is not None:
+                c_title = norm_ht(c_title)
                 if len(c_title) > 0:
-                    sents_content += (c_title + "。")
+                    sents_arr.append(c_title)
             tables = content.find_all('table')
+            # 假设训练数据中，text和table不同时存在于同一content内
             if len(tables) == 0:
-                sents_content += content.get_text()
-        sents_content = norm_ht(sents_content)
-        sentences = sents_content.split('。')
-        for sentence in sentences:
-            sents_arr.append(sentence + "。")
+                sentences = content.get_text().split('。')
+                for sentence in sentences:
+                    # 合并，英语怎么处理？
+                    sen = norm_ht(sentence)
+                    if len(sen) > 0:
+                        sents_arr.append(sen + "。")
     return sents_arr
+
+
+# def levelText_without_table(htmlpath):
+#     soup = BeautifulSoup(open(htmlpath), 'lxml')
+#     sents_arr = []
+#     for paragraph in soup.find_all('div', type='paragraph'):
+#         p_title = paragraph.attrs.get('title')
+#         if p_title is not None:
+#             p_title = norm_ht(p_title)
+#             if len(p_title) > 0:
+#                 sents_arr.append(p_title + "。")
+#         sents_content = ''
+#         for content in paragraph.find_all('div', type='content'):
+#             c_title = content.attrs.get('title')
+#             if c_title is not None:
+#                 if len(c_title) > 0:
+#                     sents_content += (c_title + "。")
+#             tables = content.find_all('table')
+#             if len(tables) == 0:
+#                 sents_content += content.get_text()
+#         sents_content = norm_ht(sents_content)
+#         sentences = sents_content.split('。')
+#         for sentence in sentences:
+#             sents_arr.append(sentence + "。")
+#     return sents_arr
 
 
 def mask_contract_field(line_source, val, tag_arr, label, obj, isnum):
@@ -266,18 +267,24 @@ def mask_contract_field(line_source, val, tag_arr, label, obj, isnum):
                 begin, end = iter.span()  # 返回每个匹配坐标
                 if iter.group() == val:
                     obj.setStatus(label)
-                    tag_arr[begin] = 'B-' + label
+                    ner_label = label
+                    # if ner_label in ['JF', 'YF', 'LH']:
+                    #     ner_label = 'ORG'
+                    tag_arr[begin] = 'B-' + ner_label
                     for index in range(begin + 1, end):
-                        tag_arr[index] = 'I-' + label
+                        tag_arr[index] = 'I-' + ner_label
                     isMask = True
         else:
             iters = re.finditer(val, line_source, re.I)
             for iter in iters:
                 begin, end = iter.span()  # 返回每个匹配坐标
                 obj.setStatus(label)
-                tag_arr[begin] = 'B-' + label
+                ner_label = label
+                # if ner_label in ['JF', 'YF', 'LH']:
+                #     ner_label = 'ORG'
+                tag_arr[begin] = 'B-' + ner_label
                 for index in range(begin + 1, end):
-                    tag_arr[index] = 'I-' + label
+                    tag_arr[index] = 'I-' + ner_label
                 isMask = True
 
     return isMask

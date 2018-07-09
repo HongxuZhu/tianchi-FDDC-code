@@ -224,11 +224,48 @@ def showTable():
             print('\n')
 
 
+def debug(id, rootdir):
+    htmlpath = os.path.join(rootdir, id)
+    id = id.replace('.html', '')
+    if os.path.isfile(htmlpath):
+        soup = BeautifulSoup(open(htmlpath), 'lxml')
+        tables = list(soup.find_all('table'))
+        dz_tmp_list_dict = {}
+        for t1 in range(len(tables)):
+            table = tables[t1]
+            cuts = table2array(table)
+            for t2 in range(len(cuts)):
+                cut = cuts[t2]
+                dx_weight, effective, dz_tmp_list, tag = table_tag_byrow(id, cut)
+                if dx_weight > 0 and effective > 0:
+                    density = float(effective / (5 * len(dz_tmp_list)))  # 有效数据密度
+                    if density > 0.2:
+                        dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag, density)
+
+        # paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
+        paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0] * d[1][4], reverse=True))
+
+        for p in paixu:
+            key = p[0]
+            val = p[1]
+            effective = val[1]
+            dz_tmp_list = val[2]
+            tag = val[3]
+            density = val[4]
+            for tmp in dz_tmp_list:
+                tmp.desc()
+            print('tag=( {} ),effective=( {} ),density=( {} )'.format(tag, str(effective), str(density)))
+            print('以上结果为预测------------------------------------------------------------------------------------------------')
+        print('\n')
+
+
 def writeTable():
     submit_path_ht = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/submit_sample/dingzeng.text'
+    # submit_path_ht = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/submit_sample/train/dingzeng.test'
     submit_path_file = open(submit_path_ht, 'a+')
     submit_path_file.write('公告id\t增发对象\t增发数量\t增发金额\t锁定期\t认购方式\n')
     rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_b_20180708/定增/html/'
+    # rootdir = dz_htmlpath
     filelist = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
     for i in range(0, len(filelist)):
         id = filelist[i]
@@ -247,11 +284,10 @@ def writeTable():
                     if dx_weight > 0 and effective > 0:
                         density = float(effective / (5 * len(dz_tmp_list)))  # 有效数据密度
                         if density > 0.2:
-                            dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag)
+                            dz_tmp_list_dict[(t1, t2)] = (dx_weight, effective, dz_tmp_list, tag, density)
 
             # paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0], reverse=True))
-            paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0] * float(d[1][1] / (5 * len(d[1][2]))),
-                                reverse=True))
+            paixu = list(sorted(dz_tmp_list_dict.items(), key=lambda d: d[1][0] * d[1][4], reverse=True))
 
             if len(paixu) > 0:
                 p = paixu[0]
@@ -260,10 +296,11 @@ def writeTable():
                 effective = val[1]
                 dz_tmp_list = val[2]
                 tag = val[3]
+                density = val[4]
                 for tmp in dz_tmp_list:
                     tmp.desc()
                     submit_dz(tmp, submit_path_file)
-                print('tag=( {} ),effective=( {} )'.format(tag, str(effective)))
+                print('tag=( {} ),effective=( {} ),density=( {} )'.format(tag, str(effective), str(density)))
             print(
                 '以上结果为预测------------------------------------------------------------------------------------------------')
             print('\n')
@@ -287,6 +324,7 @@ def submit_dz(tmp, submit_path_file):
 
 # 用于生成提交数据
 writeTable()
+# debug('15524495.html', dz_htmlpath)
 
 # 用于发现表头规律
 # searchTable3()

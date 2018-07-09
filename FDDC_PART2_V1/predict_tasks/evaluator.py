@@ -89,10 +89,10 @@ def eval_dz():
     p_je, r_je, f_je = f1(corje, posje, actje)
     p_sd, r_sd, f_sd = f1(corsd, possd, actsd)
     p_rg, r_rg, f_rg = f1(corrg, posrg, actrg)
-    dzlogger.info('SL: r={},r={},f1={}'.format(p_sl, r_sl, f_sl))
-    dzlogger.info('JE: r={},r={},f1={}'.format(p_je, r_je, f_je))
-    dzlogger.info('SD: r={},r={},f1={}'.format(p_sd, r_sd, f_sd))
-    dzlogger.info('RG: r={},r={},f1={}'.format(p_rg, r_rg, f_rg))
+    dzlogger.info('SL: p={},r={},f1={}'.format(p_sl, r_sl, f_sl))
+    dzlogger.info('JE: p={},r={},f1={}'.format(p_je, r_je, f_je))
+    dzlogger.info('SD: p={},r={},f1={}'.format(p_sd, r_sd, f_sd))
+    dzlogger.info('RG: p={},r={},f1={}'.format(p_rg, r_rg, f_rg))
     dzlogger.info('score={}'.format(score([f_sl, f_je, f_sd, f_rg])))
 
 

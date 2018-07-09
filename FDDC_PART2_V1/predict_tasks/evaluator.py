@@ -54,6 +54,9 @@ def eval_dz():
                 actsd = act(item.suoding, actsd)
                 actrg = act(item.rengou, actrg)
                 dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(item.id, item.duixiang, item.shuliang, item.jine, item.suoding, item.rengou))
+
+            if len(train) != len(test):
+                dzlogger.info('id={},数量不一致'.format(id))
         else:
             dzlogger.info('id={},未能识别'.format(id))
 

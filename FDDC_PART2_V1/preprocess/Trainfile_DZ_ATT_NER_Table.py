@@ -225,14 +225,15 @@ def showTable():
 
 
 def writeTable():
-    submit_path_ht = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/submit_sample/dingzeng.txt'
+    submit_path_ht = '/home/utopia/PycharmProjects/csahsaohdoashdoasdhoa/FDDC_PART2_V1/submit_sample/dingzeng.text'
     submit_path_file = open(submit_path_ht, 'a+')
     submit_path_file.write('公告id\t增发对象\t增发数量\t增发金额\t锁定期\t认购方式\n')
-    rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_a_20180605/定增/html/'
+    rootdir = '/home/utopia/corpus/FDDC_part2_data/FDDC_announcements_round1_test_b_20180708/定增/html/'
     filelist = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
     for i in range(0, len(filelist)):
         id = filelist[i]
         htmlpath = os.path.join(rootdir, id)
+        id = id.replace('.html', '')
         if os.path.isfile(htmlpath):
             soup = BeautifulSoup(open(htmlpath), 'lxml')
             tables = list(soup.find_all('table'))
@@ -282,10 +283,10 @@ def submit_dz(tmp, submit_path_file):
 
 
 # 用于调试表格策略
-showTable()
+# showTable()
 
 # 用于生成提交数据
-# writeTable()
+writeTable()
 
 # 用于发现表头规律
 # searchTable3()

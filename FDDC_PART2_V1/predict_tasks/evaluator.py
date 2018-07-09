@@ -42,6 +42,8 @@ def eval_dz():
             posje = pos(item.jine, posje)
             possd = pos(item.suoding, possd)
             posrg = pos(item.rengou, posrg)
+            dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(item.id, item.duixiang, item.shuliang, item.jine, item.suoding, item.rengou))
+        dzlogger.info('------------------------------以上为训练数据------------------------------')
 
         if test is not None:
             for item in test:
@@ -51,27 +53,26 @@ def eval_dz():
                 actje = act(item.jine, actje)
                 actsd = act(item.suoding, actsd)
                 actrg = act(item.rengou, actrg)
+                dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(item.id, item.duixiang, item.shuliang, item.jine, item.suoding, item.rengou))
         else:
             dzlogger.info('id={},未能识别'.format(id))
 
         for pk in train_pk.keys():
             train = train_pk.get(pk)
             test = test_pk.get(pk)
-            dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(train.id, train.duixiang, train.shuliang, train.jine, train.suoding, train.rengou))
-            dzlogger.info('------------------------------以上为训练数据------------------------------')
             if test is not None:  # 匹配主键
                 corsl, truesl = cor(train.shuliang, test.shuliang, corsl)
                 corje, trueje = cor(train.jine, test.jine, corje)
                 corsd, truesd = cor(train.suoding, test.suoding, corsd)
                 corrg, truerg = cor(train.rengou, test.rengou, corrg)
-                dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(test.id, test.duixiang,
-                                                                           mask(test.shuliang, truesl),
-                                                                           mask(test.jine, trueje),
-                                                                           mask(test.suoding, truesd),
-                                                                           mask(test.rengou, truerg)))
+                # dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(test.id, test.duixiang,
+                #                                                            mask(test.shuliang, truesl),
+                #                                                            mask(test.jine, trueje),
+                #                                                            mask(test.suoding, truesd),
+                #                                                            mask(test.rengou, truerg)))
             else:
                 dzlogger.info('pk={},主键未能识别'.format(pk))
-            dzlogger.info('------------------------------以上为预测数据------------------------------\n')
+        dzlogger.info('------------------------------以上为预测数据------------------------------\n\n\n')
 
     disaccord = 0
     for id in tests.keys():

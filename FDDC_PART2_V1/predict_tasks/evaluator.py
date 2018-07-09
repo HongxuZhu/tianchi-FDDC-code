@@ -45,6 +45,11 @@ def eval_dz():
             dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(item.id, item.duixiang, item.shuliang, item.jine, item.suoding, item.rengou))
         dzlogger.info('------------------------------以上为训练数据------------------------------')
 
+        if test is None or len(train) != len(test):
+            dzlogger.info('id={},数量不一致'.format(id))
+        else:
+            dzlogger.info('id={},数量一致'.format(id))
+
         if test is not None:
             for item in test:
                 actid = act(item.id, actid)
@@ -54,9 +59,6 @@ def eval_dz():
                 actsd = act(item.suoding, actsd)
                 actrg = act(item.rengou, actrg)
                 dzlogger.info('id={},dx={},sl={},je={},sd={},rg={}'.format(item.id, item.duixiang, item.shuliang, item.jine, item.suoding, item.rengou))
-
-            if len(train) != len(test):
-                dzlogger.info('id={},数量不一致'.format(id))
         else:
             dzlogger.info('id={},未能识别'.format(id))
 
